@@ -46,8 +46,37 @@
 # +   <shell>/bin/sh</shell>
 #   </user>
 #
+# 4. general
+#
+#   # vi /conf/config.xml
+#   ...
+#   <hostname>opnsense40</hostname>
+#   ...
+#   ...
+#   <timezone>Asia/Tokyo</timezone>
+#   ...
+#
+# 5. install snmp plugin
+#
+#   # pkg install os-net-snmp
 #
 #
+#   # vi /conf/config.xml
+#   <netsnmp>
+#     <user version="1.0.1">
+#       <users/>
+#     </user>
+#     <general version="1.0.4">
+# !   <enabled>1</enabled>
+# !     <community>public</community>
+# !     <syslocation>mydesk</syslocation>
+#       <syscontact/>
+#       <l3visibility>0</l3visibility>
+#       <versionoid>0</versionoid>
+#       <enableagentx>0</enableagentx>
+#       <listen/>
+#     </general>
+#   </netsnmp>
 
 template="opnsense"
 name="opnsense40"
