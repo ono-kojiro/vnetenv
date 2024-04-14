@@ -29,6 +29,10 @@
 #
 # 3. add public key
 #
+#   generate/show base64 format of public key
+#   $ cat $HOME/.ssh/id_ed25519.pub | tr -d '\n' | base64
+#   
+#   paste the base64 string to /conf/config.xml
 #   # vi /conf/config.xml
 #   ...
 #   <user>
@@ -63,8 +67,7 @@ network0_switch="br40"
 network1_type="virtio-net"
 network1_switch="br0"
 disk0_type="virtio-blk"
-disk0_name="opnsense.img"
-disk0_dev="sparse-zvol"
+disk0_name="disk0.img"
 EOF
 
 sudo cp -f _tmp.conf /vm/.templates/${template}.conf
