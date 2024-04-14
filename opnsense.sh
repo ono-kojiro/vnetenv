@@ -27,7 +27,23 @@
 #   # exit
 #   Enter an option: 11 (Reload all services)
 #
-
+# 3. add public key
+#
+#   # vi /conf/config.xml
+#   ...
+#   <user>
+#     <name>root</name>
+#     ...
+#     ...
+#     <uid>0</uid>
+# +   <expires/>
+# +   <authorizedkeys>XXXXXXXXXXXX=</authorizedkeys>
+# +   <otp_seed/>
+# +   <shell>/bin/sh</shell>
+#   </user>
+#
+#
+#
 
 template="opnsense"
 name="opnsense40"
