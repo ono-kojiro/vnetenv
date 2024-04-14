@@ -1,0 +1,5 @@
+---
+ansible_host: freebsd
+ansible_become: true
+ansible_user: '{{ lookup(''ansible.builtin.env'', ''USER'') }}'
+

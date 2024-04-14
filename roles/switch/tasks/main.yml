@@ -1,0 +1,32 @@
+---
+- name: create switches
+  ansible.builtin.shell: |
+    inet="{{ item.inet | default(None) }}"
+    interface="{{ item.interface | default(None) }}"
+
+    if_opts=""
+
+    if [ ! -z "${interface}" ]; then
+      if_opts="${if_opts} -b ${interface}"
+    fi
+
+    if [ ! -z "${inet}" ]; then
+      if_opts="${if_opts} -a ${inet}"
+    fi
+
+    vm switch list | grep -e '^{{ item.name }}'
+    if [ $? -ne 0 ]; then
+      vm switch create -t {{ item.type }} ${if_opts} {{ item.name }}
+    fi
+  loop: "{{ switches }}"
+    
+#- name: set ip addr
+#  ansible.builtin.shell: |
+#    name="{{ item.name }}"
+#    inet="{{ item.inet | default(None) }}"
+#    if [ ! -z "${inet}" ]; then
+#      ifconfig vm-${name} inet ${inet} up
+#      sysrc ifconfig_vm-${name}="inet ${inet} up"
+#    fi
+#  loop: "{{ switches }}"
+

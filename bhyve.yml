@@ -1,0 +1,8 @@
+- name:  deploy bhyve environment
+  hosts: freebsd 
+  become: true
+
+  roles:
+    - name: bhyve
+      tags: bhyve
+

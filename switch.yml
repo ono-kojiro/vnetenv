@@ -1,0 +1,8 @@
+- name:  create switches
+  hosts: freebsd 
+  become: true
+
+  roles:
+    - name: switch
+      tags: switch
+

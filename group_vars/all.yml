@@ -1,0 +1,26 @@
+---
+switches:
+  - name: br0
+    type: manual
+    interface: bridge0
+
+  - name: br40
+    type: standard
+    inet: 192.168.40.84/24
+
+  - name: br50
+    type: standard
+    inet: 192.168.50.84/24
+
+  - name: br60
+    type: standard
+    inet: 192.168.60.84/24
+
+  - name: br70
+    type: standard
+    inet: 192.168.70.84/24
+
+  - name: br80
+    type: standard
+    inet: 192.168.80.84/24
+

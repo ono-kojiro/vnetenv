@@ -1,0 +1,47 @@
+- name:  destroy all VMs
+  hosts: freebsd 
+  become: true
+
+  tasks:
+    - name: stop all VMs
+      ansible.builtin.shell: |
+        vm stopall
+      ignore_errors: true
+ 
+    - name: remove VMs
+      ansible.builtin.shell: |
+        vms=`vm list | tail -n +2 | awk '{ print $1 }'`
+        for vm in ${vms}; do
+          vm destroy -f ${vm}
+        done
+      ignore_errors: true
+
+    - name: remove switches
+      ansible.builtin.shell: |
+        sws=`vm switch list | tail -n +2 | awk '{ print $1 }'`
+        for sw in ${sws}; do
+          vm switch destroy ${sw}
+        done
+
+    - name: remove vm directory
+      ansible.builtin.shell: |
+        zfs list | grep -e '^zroot/vm'
+        if [ $? -eq 0 ]; then
+          zfs destroy zroot/vm
+        fi
+
+    - name: remove vm_dir
+      community.general.sysrc:
+        name: vm_dir
+        state: absent
+    
+    - name: remove vm_delay
+      community.general.sysrc:
+        name: vm_delay
+        state: absent
+    
+#    - name: remove enable_vm
+#      community.general.sysrc:
+#        name: vm_enable
+#        state: absent
+

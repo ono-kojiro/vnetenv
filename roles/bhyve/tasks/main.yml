@@ -1,0 +1,36 @@
+---
+- name: install bhyve
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - vm-bhyve
+    - bhyve-firmware
+    - grub2-bhyve
+  
+- name: create dataset for VMs
+  ansible.builtin.shell: |
+    zfs list | grep -e '^zroot/vm'
+    if [ $? -ne 0 ]; then
+      zfs create -o mountpoint=/vm zroot/vm
+    fi
+
+- name: enable vm
+  community.general.sysrc:
+    name: vm_enable
+    value: "YES"
+    
+- name: set vm_dir
+  community.general.sysrc:
+    name: vm_dir
+    value: "zfs:zroot/vm"
+    
+- name: set vm_delay
+  community.general.sysrc:
+    name: vm_delay
+    value: "5"
+
+- name: initialize vm directory
+  ansible.builtin.shell: |
+    vm init
+
