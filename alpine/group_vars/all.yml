@@ -1,2 +1,7 @@
 ---
+gitlab_alpine: https://gitlab.alpinelinux.org/alpine
+gitlab_aports: "{{ gitlab_alpine }}/infra/aports"
+aports_ver: 3.18.4
+aports_tar: "aports-v{{ aports_ver }}.tar.bz2"
+aports_url: "{{ gitlab_aports }}/-/archive/v{{ aports_ver }}/{{ aports_tar }}"
 

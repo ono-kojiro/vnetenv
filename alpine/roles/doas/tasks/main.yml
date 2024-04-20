@@ -7,20 +7,16 @@
     state: present
 
 - name: download aports
-  ansible.builtin.get_url:
-    url: https://gitlab.alpinelinux.org/alpine/aports/-/archive/master/aports-master.tar.bz2
-    dest: /root/
-
-#- name: extract aports
-#  ansible.builtin.unarchive:
-#    src: /root/aports-master.tar.bz2
-#    dest: /root/
-#    remote_src: yes
+  ansible.builtin.shell: |
+    cd /root/
+    if [ ! -e "{{ aports_tar }}" ]; then
+      curl -L -O {{ aports_url }}
+    fi
 
 - name: extract aports
   ansible.builtin.shell: |
     cd /root/
-    tar xjvf aports-master.tar.bz2
+    tar xjvf {{ aports_tar }}
 
 - name: remove doas
   ansible.builtin.shell: |
@@ -28,7 +24,7 @@
 
 - name: enable pam
   ansible.builtin.lineinfile:
-    path: /root/aports-master/main/doas/APKBUILD
+    path: /root/aports-v{{ aports_ver }}/main/doas/APKBUILD
     regexp: '--without-pam'
     state: absent
 
@@ -39,36 +35,36 @@
 - name: abuild cleanpkg
   ansible.builtin.shell: |
     if [ -d "/root/packages/main/x86_64" ]; then
-      cd /root/aports-master/main/doas
+      cd /root/aports-v{{ aports_ver }}/main/doas
       abuild -r -F cleanpkg
     fi
   ignore_errors: true
 
 - name: abuild deps
   ansible.builtin.shell: |
-    cd /root/aports-master/main/doas
+    cd /root/aports-v{{ aports_ver }}/main/doas
     abuild -r -F deps
     abuild -r -F fetch
 
 - name: abuild fetch
   ansible.builtin.shell: |
-    cd /root/aports-master/main/doas
+    cd /root/aports-v{{ aports_ver }}/main/doas
     abuild -r -F fetch
 
 - name: abuild unpack
   ansible.builtin.shell: |
-    cd /root/aports-master/main/doas
+    cd /root/aports-v{{ aports_ver }}/main/doas
     rm -rf ./pkg ./src
     abuild -r -F unpack
 
 - name: abuild prepare
   ansible.builtin.shell: |
-    cd /root/aports-master/main/doas
+    cd /root/aports-v{{ aports_ver }}/main/doas
     abuild -r -F prepare
 
 - name: abuild build
   ansible.builtin.shell: |
-    cd /root/aports-master/main/doas
+    cd /root/aports-v{{ aports_ver }}/main/doas
     abuild -r -F build
   register: res
 
@@ -77,7 +73,7 @@
 
 - name: abuild rootpkg
   ansible.builtin.shell: |
-    cd /root/aports-master/main/doas
+    cd /root/aports-v{{ aports_ver }}/main/doas
     abuild -r -F rootpkg
 
 - name: install doas-pam
@@ -88,19 +84,19 @@
 - name: revise auth in /etc/pam.d/doas
   ansible.builtin.replace:
     path: /etc/pam.d/doas
-    regexp: 'auth(\s+)include(\+)system-auth'
+    regexp: 'auth(\s+)include(\s+)system-auth'
     replace: 'auth\1include\2base-auth'
 
 - name: revise account in /etc/pam.d/doas
   ansible.builtin.replace:
     path: /etc/pam.d/doas
-    regexp: 'account(\s+)include(\+)system-auth'
+    regexp: 'account(\s+)include(\s+)system-auth'
     replace: 'account\1include\2base-account'
 
 - name: revise session in /etc/pam.d/doas
   ansible.builtin.replace:
     path: /etc/pam.d/doas
-    regexp: 'session(\s+)include(\+)system-auth'
+    regexp: 'session(\s+)include(\s+)system-auth'
     replace: 'session\1include\2base-session'
 
 - name: allow ldapwheel group
