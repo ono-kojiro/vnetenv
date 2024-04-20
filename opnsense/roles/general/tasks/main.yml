@@ -1,0 +1,17 @@
+---
+- name: change hostname
+  ansible.builtin.replace:
+    path: /conf/config.xml
+    regexp: '(.*)<hostname>.+</hostname>(.*)'
+    replace: '\1<hostname>{{ hostname }}</hostname>\2'
+
+- name: change timezone
+  ansible.builtin.replace:
+    path: /conf/config.xml
+    regexp: '(.*)<timezone>.+</timezone>(.*)'
+    replace: '\1<timezone>Asia/Tokyo</timezone>\2'
+
+- name: reload all
+  ansible.builtin.shell: |
+    /usr/local/sbin/opnsense-shell reload
+

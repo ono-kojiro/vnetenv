@@ -1,0 +1,10 @@
+---
+- hosts: opnsense
+
+  roles:
+    - name: general
+      tags: general
+
+    - name: snmp
+      tags: snmp
+

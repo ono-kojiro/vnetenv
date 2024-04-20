@@ -111,6 +111,11 @@ EOF
   sudo vm console ${name}
 }
 
+hosts()
+{
+  ansible-inventory -i template.yml --yaml --list --output hosts.yml
+}
+
 default()
 {
   tag=$1

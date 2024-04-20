@@ -1,0 +1,31 @@
+---
+- name: install os-net-snmp plugin
+  ansible.builtin.shell: |
+    pkg install -y os-net-snmp
+
+- name: install python-lxml to edit config.xml
+  ansible.builtin.shell: |
+    pkg install -y py39-lxml
+
+- name: enable net-snmp
+  ansible.builtin.xml:
+    path: /conf/config.xml
+    xpath: /opnsense/OPNsense/netsnmp/general/enabled
+    value: "1"
+
+- name: set community
+  ansible.builtin.xml:
+    path: /conf/config.xml
+    xpath: /opnsense/OPNsense/netsnmp/general/community
+    value: "public"
+
+- name: set syslocation
+  ansible.builtin.xml:
+    path: /conf/config.xml
+    xpath: /opnsense/OPNsense/netsnmp/general/syslocation
+    value: "on my desk"
+
+- name: reload all
+  ansible.builtin.shell: |
+    /usr/local/sbin/opnsense-shell reload
+
