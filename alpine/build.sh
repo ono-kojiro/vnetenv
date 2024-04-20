@@ -44,6 +44,27 @@ default()
   $cmd
 }
 
+clone()
+{
+  segs="40 50 60"
+  for seg in $segs; do
+	name="alpine${seg}"
+    sudo vm clone alpine ${name}
+	config="/vm/${name}/${name}.conf"
+	sudo sed -i '' -e "s/\"br0\"/\"br${seg}\"/" $config
+  done
+}
+
+unclone()
+{
+  segs="40 50 60"
+  for seg in $segs; do
+    sudo vm destroy -f alpine${seg}
+  done
+}
+
+
+
 hosts
 
 while [ $# -ne 0 ]; do
