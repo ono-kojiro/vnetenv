@@ -1,5 +1,8 @@
 #!/bin/sh
 
+top_dir="$(cd "$(dirname "$0")" > /dev/null 2>&1 && pwd)"
+cd $top_dir
+
 # ENABLE SSHD
 # 1. connect using console
 #    $ sudo vm console opnsense
@@ -83,11 +86,13 @@ name="opnsense"
 
 iso="OPNsense-24.1-serial-amd64.img"
 
-if [ ! -e "/vm/.iso/$iso" ]; then
-  sudo vm iso $HOME/Downloads/$iso
-fi
+install()
+{
+  if [ ! -e "/vm/.iso/$iso" ]; then
+    sudo vm iso $HOME/Downloads/$iso
+  fi
 
-cat - << EOF > _tmp.conf
+  cat - << EOF > _tmp.conf
 loader="bhyveload"
 cpu=2
 memory=2048M
@@ -97,11 +102,32 @@ disk0_type="virtio-blk"
 disk0_name="disk0.img"
 EOF
 
-sudo cp -f _tmp.conf /vm/.templates/${template}.conf
+  sudo cp -f _tmp.conf /vm/.templates/${template}.conf
 
-sudo vm create -t ${template} -s 16g -m 2048m -c 2 ${name}
-sudo vm install ${name} ${iso}
+  sudo vm create -t ${template} -s g -m 2048m -c 2 ${name}
+  sudo vm install ${name} ${iso}
 
-sleep 3
-sudo vm console ${name}
+  sleep 3
+  sudo vm console ${name}
+}
+
+default()
+{
+  tag=$1
+  ansible-playbook -i hosts.yml -t ${tag} site.yml
+}
+
+if [ $# -eq 0 ]; then
+  all
+fi
+
+for target in "$@"; do
+  LANG=C type "$target" 2>&1 | grep 'function' > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    $target
+  else
+    default $target
+  fi
+done
+
 
