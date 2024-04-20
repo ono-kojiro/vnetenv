@@ -1,0 +1,10 @@
+- name: setup alpine
+  hosts: alpine
+
+  roles:
+  - name: ldap
+    tags: ldap
+
+  - name: doas
+    tags: doas
+
