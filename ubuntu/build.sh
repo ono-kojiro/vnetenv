@@ -100,6 +100,46 @@ stopall()
   done
 }
 
+enableall()
+{
+  for seg in $segs; do
+	vmname="${name}${seg}"
+    line=`cat /etc/rc.conf | grep vm_list | grep -v "^#"`
+	value=`echo "$line" | awk -F'=' '{ print $2 }' | tr -d '"'`
+	
+	# add spaces and check
+	echo "' $value '" | grep " $vmname "
+	if [ $? -ne 0 ]; then
+      new_value="$value $vmname"
+	  echo "INFO: enable $vmname"
+	  sudo sysrc vm_list="$new_value"
+	else
+	  echo "INFO: $vmname is already enabled"
+	fi
+  done
+}
+
+disableall()
+{
+  for seg in $segs; do
+	vmname="${name}${seg}"
+    line=`cat /etc/rc.conf | grep vm_list | grep -v "^#"`
+	value=`echo "$line" | awk -F'=' '{ print $2 }' | tr -d '"'`
+	
+	# add spaces and check
+	echo "' $value '" | grep " $vmname "
+	if [ $? -eq 0 ]; then
+	  # remove vmname
+	  new_value=`echo " $value " | sed -e "s/ $vmname / /" | tr -s " "`
+	  new_value=`echo $new_value | sed -e "s/^[ ]*//" | sed -e "s/[ ]*$//"`
+	  echo "INFO: disable $vmname"
+	  sudo sysrc vm_list="$new_value"
+	else
+	  echo "INFO: $vmname is already disabled"
+	fi
+  done
+}
+
 
 hosts
 
