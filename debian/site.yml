@@ -1,0 +1,10 @@
+- name: setup sssd-ldap
+  hosts: debian
+
+  roles:
+    - role: sssd
+      tags: sssd
+    
+    - role: sudo
+      tags: sudo
+    

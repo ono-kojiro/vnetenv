@@ -1,0 +1,7 @@
+---
+ansible_host: debian
+ansible_user: root
+ansible_become: true
+ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+
+
