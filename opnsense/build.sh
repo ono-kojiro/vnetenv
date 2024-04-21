@@ -176,6 +176,29 @@ stopall()
   done
 }
 
+snmp()
+{
+  addrs="192.168.40.1 192.168.50.1 192.168.60.1"
+  mkdir -p log
+  for addr in $addrs; do
+    logfile="log/$addr.log"
+    snmpwalk -v 2c -c public -OX $addr . > $logfile
+
+	jsonfile="log/$addr.json"
+	python3 oid2dict.py $logfile > $jsonfile
+  done
+}
+
+analysis()
+{
+  python3 parse.py -o output.json \
+    log/192.168.40.1.json \
+	log/192.168.50.1.json \
+	log/192.168.60.1.json
+  cat output.json
+}
+
+
 if [ $# -eq 0 ]; then
   all
 fi
