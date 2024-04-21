@@ -83,6 +83,7 @@ cd $top_dir
 
 template="opnsense"
 name="opnsense"
+segments="40 50 60"
 
 iso="OPNsense-24.1-serial-amd64.img"
 
@@ -120,6 +121,59 @@ default()
 {
   tag=$1
   ansible-playbook -i hosts.yml -t ${tag} site.yml
+}
+
+clone()
+{
+  for seg in $segments; do
+    name="opnsense${seg}"
+	#sudo vm clone opnsense ${name}
+	config="/vm/${name}/${name}.conf"
+	sudo sed -i '' -e "s/\"br0\"/\"br${seg}\"/" $config
+	echo "network1_type=\"virtio-net\"" | sudo tee -a $config > /dev/null
+
+	case $seg in
+	  40 )
+		br="br0"
+		;;
+	  50 )
+		br="br40"
+		;;
+	  60 )
+		br="br50"
+	    ;;
+	  * )
+		echo "unknown segment, $seg"
+		exit 1
+		;;
+	esac
+
+	echo "network1_switch=\"${br}\"" | sudo tee -a $config > /dev/null
+  done
+}
+
+unclone()
+{
+  for seg in $segments; do
+    name="opnsense${seg}"
+	sudo vm destroy -f ${name}
+  done
+}
+
+startall()
+{
+  for seg in $segments; do
+    name="opnsense${seg}"
+	sudo vm start ${name}
+  done
+}
+
+stopall()
+{
+  for seg in $segments; do
+    name="opnsense${seg}"
+	sudo vm stop ${name}
+  done
 }
 
 if [ $# -eq 0 ]; then
