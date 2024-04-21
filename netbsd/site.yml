@@ -1,0 +1,9 @@
+---
+- hosts: netbsd
+
+  roles:
+    - role: ldap
+      tags: ldap
+
+    - role: doas
+      tags: doas

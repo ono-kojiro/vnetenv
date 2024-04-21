@@ -1,0 +1,5 @@
+---
+- import_tasks: ldap.yml
+- import_tasks: pam.yml
+- import_tasks: nsswitch.yml
+- import_tasks: authkeyscmd.yml
