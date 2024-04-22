@@ -20,7 +20,7 @@ snmp()
     snmpwalk -v 2c -c public -OX $addr . > $logfile
 
 	jsonfile="$addr.json"
-	python3 ../oid2dict.py $logfile > $jsonfile
+	python3 oid2dict.py $logfile > $jsonfile
   done
 }
 
@@ -29,17 +29,51 @@ json()
   for addr in $addrs; do
     logfile="$addr.log"
 	jsonfile="$addr.json"
-	python3 ../oid2dict.py $logfile > $jsonfile
+	python3 oid2dict.py $logfile > $jsonfile
   done
 }
 
 analysis()
 {
-  python3 ../parse.py -o output.json \
-    192.168.40.1.json \
-	192.168.50.1.json \
-	192.168.60.1.json
-  cat output.json
+  for addr in $addrs; do
+	jsonfile="$addr.json"
+	ymlfile="$addr.yml"
+    python3 parse.py -o $ymlfile $jsonfile
+  done
+}
+
+prepare()
+{
+  url_base="https://www.cisco.com/content/dam/en_us/about/ac50/ac47"
+  zips="doc_jpg 3015_jpeg"
+
+  for name in $zips; do
+    url="${url_base}/${name}.zip"
+	if [ ! -e "${name}.zip" ]; then
+	  curl -L -O -C - ${url}
+    else
+	  echo skip ${name}.zip
+	fi
+  done
+
+  for name in $zips; do
+	mkdir -p orig/${name}
+	unzip -n -d orig/${name} ${name}.zip
+
+    mkdir -p icons/${name}
+	python3 jpeg2png.py -o icons/${name} orig/${name}
+  done
+}
+
+dot()
+{
+  python3 yml2dot.py -o mygraph.dot \
+    192.168.40.1.yml \
+    192.168.50.1.yml \
+    192.168.60.1.yml
+  cat mygraph.dot
+  command dot -Tpng -o mygraph.png mygraph.dot
+
 }
 
 

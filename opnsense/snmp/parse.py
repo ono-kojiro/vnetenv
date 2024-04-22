@@ -5,6 +5,9 @@ import sys
 import getopt
 import json
 
+import yaml
+from yaml.loader import SafeLoader
+
 from pprint import pprint
 from jsonpath_ng import jsonpath, parse
 
@@ -16,6 +19,14 @@ def read_json(filepath):
   data = json.load(fp_in)
   fp_in.close()
   return data
+
+
+def read_yaml(filepath):
+  fp = open(filepath, mode="r", encoding="utf-8")
+  data = yaml.load(fp, Loader=SafeLoader)
+  fp.close()
+  return data
+
 
 def main():
     ret = 0
@@ -79,15 +90,21 @@ def main():
             for m in expr.find(data):
                 records[keyword] = m.value
 
-    fp.write(
-        json.dumps(
-            records,
-            indent=4,
-            ensure_ascii=False,
-            sort_keys=True,
-        )
+    yaml.dump(records,
+        fp,
+        allow_unicode=True,
+        default_flow_style=False,
+        sort_keys=True
     )
-    fp.write('\n')
+    #fp.write(
+    #    json.dumps(
+    #        records,
+    #        indent=4,
+    #        ensure_ascii=False,
+    #        sort_keys=True,
+    #    )
+    #)
+    #fp.write('\n')
     
     if output is not None :
         fp.close()
