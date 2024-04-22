@@ -5,6 +5,7 @@ import os
 
 import getopt
 import json
+import re
 
 import yaml
 from yaml.loader import SafeLoader
@@ -33,6 +34,26 @@ def read_yaml(filepath):
   fp.close()
   return data
 
+def get_interfaces(ifids, ignores):
+    ifaces = []
+    for ifid in ifids:
+        ifname = ifids[ifid]['val']
+        if ifname in ignores :
+            continue
+        ifaces.append(ifid)
+
+    return ifaces
+
+def get_ip_address(ip2macs, ifaces, macs):
+    items = {}
+    for id in ifaces:
+        target = macs[id]
+        for ipv4 in ip2macs[id]['ipv4']:
+            mac = ip2macs[id]['ipv4'][ipv4]['val']
+            print("debug: {0}, {1}".format(mac, target))
+            if mac == target :
+                items[id] = ipv4
+    return items
 
 def main():
     ret = 0
@@ -97,45 +118,44 @@ def main():
 
     for filepath in args:
         data = read_yaml(filepath)
-        addr = os.path.splitext(os.path.basename(filepath))[0]
-        if not addr in switch_addrs:
-            print('ERROR: no hostname for {0}'.format(addr), file=sys.stderr)
-            sys.exit(1)
+        sysname = data["['sysName.0']"]['val']
+        sysname = re.sub(r'\..+', '', sysname)
 
-        hostname = switch_addrs[addr]
-
-        print(addr, file=sys.stderr)
         ifids = data['ifName']
-        for ifid in ifids:
+        ip2macs = data['ipNetToPhysicalPhysAddress']
+
+        # [ '1', '2', ... ]
+        ifaces = get_interfaces(ifids, ignores)
+
+        # id => mac
+        macs = {}
+        for i in ifaces:
+            macs[i] = data['ifPhysAddress'][i]['val']
+
+        # id => ipv4
+        ipv4s  = get_ip_address(ip2macs, ifaces, macs)
+        pprint(ipv4s)
+
+        hostname = sysname
+
+        for ifid in ifaces:
+            # ex. vtnet0
             ifname = ifids[ifid]['val']
-            if ifname in ignores :
-                continue
-            
-            mac = data['ifPhysAddress'][ifid]['val']
-            
+            mac    = macs[ifid]
+            ipv4   = ipv4s[ifid]
+
             hosts = {}
-            ipv4s = data['ipNetToPhysicalPhysAddress'][ifid]['ipv4']
-            for ipv4 in ipv4s:
-                if ipv4 == addr :
+            items = data['ipNetToPhysicalPhysAddress'][ifid]['ipv4']
+            for addr in items:
+                if addr == ipv4 :
                     continue
-
-                if ipv4 in switch_addrs and switch_addrs[ipv4] == hostname :
-                    continue
-
-                mac = ipv4s[ipv4]['val']
-                hosts[ipv4] = mac
-            
+                hosts[addr] = items[addr]['val']
 
             if not hostname in switches:
                 switches[hostname] = {}
             switches[hostname][ifname] = hosts
 
-    
-    pprint(switches, stream=sys.stderr)
-
     mygraph = graph('mygraph')
-
-    aliases = { }
 
     for hostname in switches :
         mysubgraph = subgraph(hostname)

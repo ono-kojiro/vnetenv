@@ -69,13 +69,8 @@ def main():
     
     records = {}
 
-    exprs = [
-        parse('$..ifName'),
-        parse('$..ifPhysAddress'),
-        parse('$..ipNetToPhysicalPhysAddress'),
-    ]
-
     keywords = [
+        "['sysName.0']",
         'ifName',
         'ifPhysAddress',
         'ipNetToPhysicalPhysAddress',
