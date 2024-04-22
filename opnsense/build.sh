@@ -86,6 +86,8 @@ name="opnsense"
 segments="40 50 60"
 
 iso="OPNsense-24.1-serial-amd64.img"
+  
+addrs="192.168.40.1 192.168.50.1 192.168.60.1"
 
 install()
 {
@@ -178,12 +180,21 @@ stopall()
 
 snmp()
 {
-  addrs="192.168.40.1 192.168.50.1 192.168.60.1"
   mkdir -p log
   for addr in $addrs; do
     logfile="log/$addr.log"
     snmpwalk -v 2c -c public -OX $addr . > $logfile
 
+	jsonfile="log/$addr.json"
+	python3 oid2dict.py $logfile > $jsonfile
+  done
+}
+
+json()
+{
+  mkdir -p log
+  for addr in $addrs; do
+    logfile="log/$addr.log"
 	jsonfile="log/$addr.json"
 	python3 oid2dict.py $logfile > $jsonfile
   done

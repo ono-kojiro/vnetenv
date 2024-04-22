@@ -20,6 +20,11 @@ def str2dict(data, oid, typ, val) :
            continue
 
         if not token in data:
+            #token = re.sub(r'^"', '', token)
+            #token = re.sub(r'"$', '', token)
+            m = re.search(r'^"(.*)"$', token)
+            if m :
+                token = m.group(1)
             data[token] = {}
         data = data[token]
     data['typ'] = typ
