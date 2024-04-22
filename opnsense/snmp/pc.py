@@ -17,15 +17,16 @@ class pc(node):
     #line += ']\n'
     #line += '\n'
 
-    line += '"{0}" [\n'.format(self.name)
-    line += '  label=<\n'
-    line += '    <table cellspacing="0" border="0" cellborder="1">\n'
-    line += '      <tr><td><img src="icons/doc_jpg/pc.png" /></td></tr>\n'
-    line += '      <tr><td>{0}</td></tr>\n'.format(self.name)
-    line += '    </table>\n'
-    line += '  >\n'
-    line += ']\n'
-    line += '\n'
+    if not re.search(r':', self.name) :
+        line += '"{0}" [\n'.format(self.name)
+        line += '  label=<\n'
+        line += '    <table cellspacing="0" border="0" cellborder="1">\n'
+        line += '      <tr><td><img src="icons/doc_jpg/pc.png" /></td></tr>\n'
+        line += '      <tr><td>{0}</td></tr>\n'.format(self.name)
+        line += '    </table>\n'
+        line += '  >\n'
+        line += ']\n'
+        line += '\n'
     
     idt = ' ' * indent
     tokens = re.split(r'\n', line)

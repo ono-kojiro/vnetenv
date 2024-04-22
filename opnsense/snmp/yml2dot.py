@@ -116,6 +116,8 @@ def main():
 
     switches = {}
 
+    aliases = {}
+
     for filepath in args:
         data = read_yaml(filepath)
         sysname = data["['sysName.0']"]['val']
@@ -136,7 +138,14 @@ def main():
         ipv4s  = get_ip_address(ip2macs, ifaces, macs)
         pprint(ipv4s)
 
+
         hostname = sysname
+        
+        for i in ipv4s :
+            ifname = ifids[i]['val']
+            ipv4   = ipv4s[i]
+            alias = "{0}:{1}".format(hostname, ifname)
+            aliases[ipv4] = alias
 
         for ifid in ifaces:
             # ex. vtnet0
@@ -149,7 +158,12 @@ def main():
             for addr in items:
                 if addr == ipv4 :
                     continue
-                hosts[addr] = items[addr]['val']
+
+                if addr in aliases:
+                    alias = aliases[addr]
+                else :
+                    alias = addr
+                hosts[alias] = items[addr]['val']
 
             if not hostname in switches:
                 switches[hostname] = {}

@@ -72,8 +72,11 @@ dot()
     192.168.50.1.yml \
     192.168.60.1.yml
   cat mygraph.dot
-  command dot -Tpng -o mygraph.png mygraph.dot
+}
 
+png()
+{
+  command dot -Tpng -o mygraph.png mygraph.dot
 }
 
 
