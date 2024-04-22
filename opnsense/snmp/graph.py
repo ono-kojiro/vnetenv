@@ -25,8 +25,7 @@ class graph():
         for nd in nodes :
             names = nd.edges
             for name in names :
-                #fp.write('{0}  "{1}" -- {2};\n'.format(idt, nd.name, name))                
-                fp.write('{0}  {1} -- "{2}";\n'.format(idt, name, nd.name))                
+                fp.write('{0}  {1} -- "{2}";\n'.format(idt, name, nd.name)) 
 
     fp.write('{0}}}\n'.format(idt))
 
