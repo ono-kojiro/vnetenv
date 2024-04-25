@@ -19,7 +19,7 @@ class graph():
     #fp.write('{0}  graph [overlap=false,outputorder=edgesfirst];\n'.format(idt))
     #fp.write('{0}  node  [style=filled, fillcolor=white];\n'.format(idt))
     fp.write('{0}  rankdir="{1}";\n'.format(idt, self.rankdir))
-    fp.write('{0}  newrank=true;\n'.format(idt))
+    #fp.write('{0}  newrank=true;\n'.format(idt))
     
     fp.write('{0}  splines=curved;\n'.format(idt))
     #fp.write('{0}  splines=ortho;\n'.format(idt))
@@ -30,6 +30,7 @@ class graph():
     #fp.write('{0}  layout=sfdp;\n'.format(idt))
     #fp.write('{0}  layout=fdp;\n'.format(idt))
     #fp.write('{0}  layout=neato;\n'.format(idt))
+    fp.write('{0}  overlap=false;\n'.format(idt))
 
     fp.write('{0}\n'.format(idt))
 
@@ -48,9 +49,18 @@ class graph():
 
                 #fp.write('{0}  {1} -- {2};\n'.format(idt, name, val)) 
                 if re.search(':vtnet', name) and re.search(':vtnet', val) :
-                    fp.write('{0}  {1} -> {2};\n'.format(idt, val,  name)) 
+                    fp.write('{0}  {1} -> {2} [minlen=2];\n'.format(idt, val,  name)) 
                 else :
-                    fp.write('{0}  {1} -> {2};\n'.format(idt, name, val)) 
+                    fp.write('{0}  {1} -> {2} [minlen=2];\n'.format(idt, name, val)) 
+        fp.write('{0}\n'.format(idt))
+
+    str='''
+  { rank = same; dummy40; opnsense40; }
+  { rank = same; dummy50; opnsense50; }
+  { rank = same; dummy60; opnsense60; }
+  { dummy40 -> dummy50 -> dummy60 [minlen=4]; }
+'''
+    fp.write(str)
 
     fp.write('{0}}}\n'.format(idt))
 
