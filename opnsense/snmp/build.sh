@@ -14,6 +14,7 @@ all()
   analysis
   dot
   png
+  svg
 }
 
 snmp()
@@ -79,6 +80,12 @@ png()
 {
   command dot -Tpng -o mygraph.png mygraph.dot
 }
+
+svg()
+{
+  command dot -Tsvg -o mygraph.svg mygraph.dot
+}
+
 
 clean()
 {

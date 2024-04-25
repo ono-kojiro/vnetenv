@@ -19,9 +19,10 @@ class pc(node):
 
     if not re.search(r':', self.name) :
         line += '"{0}" [\n'.format(self.name)
+        line += '  shape=box,\n'
         line += '  label=<\n'
-        line += '    <table cellspacing="0" border="0" cellborder="1">\n'
-        line += '      <tr><td><img src="icons/doc_jpg/pc.png" /></td></tr>\n'
+        line += '    <table cellspacing="0" border="0" cellborder="0">\n'
+        line += '      <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>\n'
         line += '      <tr><td>{0}</td></tr>\n'.format(self.name)
         line += '    </table>\n'
         line += '  >\n'
