@@ -17,11 +17,12 @@ class graph():
     #fp.write('{0}graph {1} {{\n'.format(idt, self.name))
     fp.write('{0}digraph {1} {{\n'.format(idt, self.name))
     fp.write('{0}  rankdir="{1}";\n'.format(idt, self.rankdir))
-    fp.write('{0}  splines=curved;\n'.format(idt))
+    #fp.write('{0}  splines=curved;\n'.format(idt))
+    fp.write('{0}  splines=ortho;\n'.format(idt))
     #fp.write('{0}  ranksep=10;\n'.format(idt))
     #fp.write('{0}  nodesep=10;\n'.format(idt))
 
-    fp.write('{0}  layout=sfdp;\n'.format(idt))
+    #fp.write('{0}  layout=sfdp;\n'.format(idt))
     #fp.write('{0}  layout=fdp;\n'.format(idt))
     #fp.write('{0}  layout=neato;\n'.format(idt))
 
