@@ -14,9 +14,17 @@ class graph():
   def print(self, fp):
     indent = self.indent
     idt = ' ' * indent
-    fp.write('{0}graph {1} {{\n'.format(idt, self.name))
+    #fp.write('{0}graph {1} {{\n'.format(idt, self.name))
+    fp.write('{0}digraph {1} {{\n'.format(idt, self.name))
     fp.write('{0}  rankdir="{1}";\n'.format(idt, self.rankdir))
     fp.write('{0}  splines=curved;\n'.format(idt))
+    #fp.write('{0}  ranksep=10;\n'.format(idt))
+    #fp.write('{0}  nodesep=10;\n'.format(idt))
+
+    fp.write('{0}  layout=sfdp;\n'.format(idt))
+    #fp.write('{0}  layout=fdp;\n'.format(idt))
+    #fp.write('{0}  layout=neato;\n'.format(idt))
+
     fp.write('{0}\n'.format(idt))
 
     for sg in self.subgraphs:
@@ -32,7 +40,11 @@ class graph():
                 else :
                     val = nd.name
 
-                fp.write('{0}  {1} -- {2};\n'.format(idt, name, val)) 
+                #fp.write('{0}  {1} -- {2};\n'.format(idt, name, val)) 
+                if re.search(':vtnet', name) and re.search(':vtnet', val) :
+                    fp.write('{0}  {1} -> {2};\n'.format(idt, val,  name)) 
+                else :
+                    fp.write('{0}  {1} -> {2};\n'.format(idt, name, val)) 
 
     fp.write('{0}}}\n'.format(idt))
 

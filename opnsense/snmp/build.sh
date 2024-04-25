@@ -3,6 +3,8 @@
 top_dir="$(cd "$(dirname "$0")" > /dev/null 2>&1 && pwd)"
 cd $top_dir
 
+remote="192.168.0.84"
+
 addrs="192.168.40.1 192.168.50.1 192.168.60.1"
 
 all()
@@ -10,6 +12,8 @@ all()
   snmp
   json
   analysis
+  dot
+  png
 }
 
 snmp()
@@ -17,10 +21,7 @@ snmp()
   mkdir -p log
   for addr in $addrs; do
     logfile="$addr.log"
-    snmpwalk -v 2c -c public -OX $addr . > $logfile
-
-	jsonfile="$addr.json"
-	python3 oid2dict.py $logfile > $jsonfile
+    ssh $remote snmpwalk -v 2c -c public -OX $addr . > $logfile
   done
 }
 
@@ -79,6 +80,17 @@ png()
   command dot -Tpng -o mygraph.png mygraph.dot
 }
 
+clean()
+{
+  for addr in $addrs; do
+    logfile="$addr.log"
+	jsonfile="$addr.json"
+	ymlfile="$addr.yml"
+    rm -f $logfile $jsonfile $ymlfile
+  done
+
+  rm -f mygraph.dot mygraph.png
+}
 
 if [ $# -eq 0 ]; then
   all
