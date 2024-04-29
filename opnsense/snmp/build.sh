@@ -6,6 +6,10 @@ cd $top_dir
 remote="192.168.0.84"
 addrs="192.168.10.1 192.168.20.1 192.168.30.1"
 
+database="database.db"
+sqlfile="database.sql"
+
+
 help()
 {
   cat - << EOF
@@ -69,9 +73,6 @@ db()
 	jsonfiles="${jsonfiles} $addr.json"
   done
 
-  database="database.db"
-  sqlfile="database.sql"
-
   rm -f ${database}
 
   cmd="python3 json2db.py -o ${database} ${jsonfiles}"
@@ -79,6 +80,15 @@ db()
   $cmd
   sqlite3 ${database} ".dump" > ${sqlfile}
   cat ${sqlfile}
+}
+
+test()
+{
+  echo "INFO: agent_view"
+  sqlite3 ${database} "select * from agent_view;"
+
+  echo "INFO: host_view"
+  sqlite3 ${database} "select * from host_view;"
 }
 
 prepare()
