@@ -101,6 +101,7 @@ def create_ifname_table(conn):
 
 def create_view(conn):
     create_agent_view(conn)
+    create_host_view(conn)
 
 def create_agent_view(conn):
     view = 'agent_view'
@@ -120,6 +121,28 @@ def create_agent_view(conn):
     sql += 'LEFT JOIN ifmac_table ON ifname_table.sysname = ifmac_table.sysname AND ifname_table.ifid = ifmac_table.portid '
     sql += 'LEFT JOIN mac_table ON ifname_table.sysname = mac_table.sysname AND ifname_table.ifid = mac_table.portid AND ifmac_table.mac = mac_table.mac '
     sql += 'WHERE ifmac_table.mac != "" '
+    sql += ';'
+
+    c.execute(sql)
+
+def create_host_view(conn):
+    view = 'host_view'
+
+    c = conn.cursor()
+    sql = 'DROP VIEW IF EXISTS {0};'.format(view)
+    c.execute(sql)
+
+    sql = 'CREATE VIEW {0} AS '.format(view)
+    sql += 'SELECT '
+    sql += '  mac_table.sysname AS sysname, '
+    sql += '  mac_table.portid AS portid, '
+    sql += '  mac_table.ip  AS ip, '
+    sql += '  mac_table.mac AS mac, '
+    sql += '  ifmac_table.mac AS mac2 '
+    sql += 'FROM mac_table '
+    sql += 'LEFT OUTER JOIN ifmac_table ON '
+    sql += '  mac_table.mac     = ifmac_table.mac '
+    sql += 'WHERE ifmac_table.mac IS NULL '
     sql += ';'
 
     c.execute(sql)
