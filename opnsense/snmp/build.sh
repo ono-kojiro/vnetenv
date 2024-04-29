@@ -89,6 +89,9 @@ test()
 
   echo "INFO: host_view"
   sqlite3 ${database} "select * from host_view;"
+  
+  echo "INFO: conn_view"
+  sqlite3 ${database} "select * from conn_view;"
 }
 
 prepare()
