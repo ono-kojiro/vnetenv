@@ -4,8 +4,7 @@ top_dir="$(cd "$(dirname "$0")" > /dev/null 2>&1 && pwd)"
 cd $top_dir
 
 remote="192.168.0.84"
-
-addrs="192.168.40.1 192.168.50.1 192.168.60.1"
+addrs="192.168.10.1 192.168.20.1 192.168.30.1"
 
 all()
 {
@@ -69,10 +68,14 @@ prepare()
 
 dot()
 {
-  python3 yml2dot.py -o mygraph.dot \
-    192.168.40.1.yml \
-    192.168.50.1.yml \
-    192.168.60.1.yml
+  ymlfiles=""
+  for addr in $addrs; do
+    ymlfiles="$ymlfiles ${addr}.yml"
+  done
+  
+  cmd="python3 yml2dot.py -o mygraph.dot $ymlfiles"
+  echo $cmd
+  $cmd
   cat mygraph.dot
 }
 
