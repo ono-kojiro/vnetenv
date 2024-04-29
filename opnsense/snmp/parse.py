@@ -71,6 +71,7 @@ def main():
 
     keywords = [
         "['sysName.0']",
+        "['ifNumber.0']",
         'ifName',
         'ifPhysAddress',
         'ipNetToPhysicalPhysAddress',

@@ -45,7 +45,9 @@ json()
   for addr in $addrs; do
     logfile="$addr.log"
 	jsonfile="$addr.json"
-	python3 oid2dict.py $logfile > $jsonfile
+	cmd="python3 oid2dict.py -o $jsonfile $logfile"
+    echo $cmd
+    $cmd
   done
 }
 
@@ -54,8 +56,25 @@ analysis()
   for addr in $addrs; do
 	jsonfile="$addr.json"
 	ymlfile="$addr.yml"
-    python3 parse.py -o $ymlfile $jsonfile
+    cmd="python3 parse.py -o $ymlfile $jsonfile"
+    echo $cmd
+    $cmd
   done
+}
+
+db()
+{
+  jsonfiles=""
+  for addr in $addrs; do
+	jsonfiles="${jsonfiles} $addr.json"
+  done
+
+  database="database.db"
+
+  cmd="python3 json2db.py -o ${database} ${jsonfiles}"
+  echo $cmd
+  $cmd
+  sqlite3 ${database} ".dump"  
 }
 
 prepare()
@@ -91,7 +110,7 @@ dot()
   cmd="python3 yml2dot.py -o mygraph.dot $ymlfiles"
   echo $cmd
   $cmd
-  cat mygraph.dot
+  #cat mygraph.dot
 }
 
 png()

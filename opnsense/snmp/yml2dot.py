@@ -50,7 +50,7 @@ def get_ip_address(ip2macs, ifaces, macs):
         target = macs[id]
         for ipv4 in ip2macs[id]['ipv4']:
             mac = ip2macs[id]['ipv4'][ipv4]['val']
-            print("debug: {0}, {1}".format(mac, target))
+            #print("debug: {0}, {1}".format(mac, target))
             if mac == target :
                 items[id] = ipv4
     return items
@@ -136,7 +136,7 @@ def main():
 
         # id => ipv4
         ipv4s  = get_ip_address(ip2macs, ifaces, macs)
-        pprint(ipv4s)
+        #pprint(ipv4s)
 
 
         hostname = sysname
