@@ -30,12 +30,13 @@ def read_yaml(filepath):
   return data
 
 def create_table(conn):
-    create_ip_table(conn)
     create_sysname_table(conn)
+    create_ifmac_table(conn)
+    create_mac_table(conn)
     create_ifname_table(conn)
 
-def create_ip_table(conn):
-    table = 'ip_table'
+def create_ifmac_table(conn):
+    table = 'ifmac_table'
 
     c = conn.cursor()
     sql = 'DROP TABLE IF EXISTS {0};'.format(table)
@@ -43,8 +44,27 @@ def create_ip_table(conn):
 
     sql = 'CREATE TABLE {0} ('.format(table)
     sql += 'id INTEGER PRIMARY KEY, '
-    sql += 'mac TEXT, '
-    sql += 'ip  TEXT '
+    sql += 'sysname TEXT, '
+    sql += 'portid INTEGER, '
+    sql += 'mac  TEXT '
+    sql += ');'
+
+    c.execute(sql)
+
+
+def create_mac_table(conn):
+    table = 'mac_table'
+
+    c = conn.cursor()
+    sql = 'DROP TABLE IF EXISTS {0};'.format(table)
+    c.execute(sql)
+
+    sql = 'CREATE TABLE {0} ('.format(table)
+    sql += 'id INTEGER PRIMARY KEY, '
+    sql += 'sysname TEXT, '
+    sql += 'portid INTEGER, '
+    sql += 'ip TEXT, '
+    sql += 'mac  TEXT '
     sql += ');'
 
     c.execute(sql)
@@ -79,6 +99,32 @@ def create_ifname_table(conn):
 
     c.execute(sql)
 
+def create_view(conn):
+    create_agent_view(conn)
+
+def create_agent_view(conn):
+    view = 'agent_view'
+
+    c = conn.cursor()
+    sql = 'DROP VIEW IF EXISTS {0};'.format(view)
+    c.execute(sql)
+
+    sql = 'CREATE VIEW {0} AS '.format(view)
+    sql += 'SELECT '
+    sql += '  ifname_table.sysname AS sysname, '
+    sql += '  ifname_table.ifid AS ifid, '
+    sql += '  ifname_table.ifname AS ifname, '
+    sql += '  ifmac_table.mac AS mac, '
+    sql += '  mac_table.ip  AS ip '
+    sql += 'FROM ifname_table '
+    sql += 'LEFT JOIN ifmac_table ON ifname_table.sysname = ifmac_table.sysname AND ifname_table.ifid = ifmac_table.portid '
+    sql += 'LEFT JOIN mac_table ON ifname_table.sysname = mac_table.sysname AND ifname_table.ifid = mac_table.portid AND ifmac_table.mac = mac_table.mac '
+    sql += 'WHERE ifmac_table.mac != "" '
+    sql += ';'
+
+    c.execute(sql)
+
+
 def insert_ifname(conn, sysname, ifid, ifname):
     table = 'ifname_table'
 
@@ -92,14 +138,29 @@ def insert_ifname(conn, sysname, ifid, ifname):
 
     c.execute(sql, item)
 
-def insert_ip(conn, mac, ip):
-    table = 'ip_table'
+def insert_ifmac(conn, sysname, portid, mac):
+    table = 'ifmac_table'
 
     c = conn.cursor()
-    sql = 'INSERT INTO {0} VALUES ( NULL, ?, ?);'.format(table)
+    sql = 'INSERT INTO {0} VALUES ( NULL, ?, ?, ? );'.format(table)
     item = [
+        sysname,
+        portid,
         mac,
+    ]
+
+    c.execute(sql, item)
+
+def insert_mac(conn, sysname, portid, ip, mac):
+    table = 'mac_table'
+
+    c = conn.cursor()
+    sql = 'INSERT INTO {0} VALUES ( NULL, ?, ?, ?, ? );'.format(table)
+    item = [
+        sysname,
+        portid,
         ip,
+        mac,
     ]
 
     c.execute(sql, item)
@@ -115,17 +176,38 @@ def insert_sysname(conn, name):
 
     c.execute(sql, item)
 
-def search_ip(conn, data):
+def search_ifmac(conn, data, sysname):
+    keyword = 'ifPhysAddress'
+    expr = parse('$..' + keyword)
+
+    items = {}
+
+    for m in expr.find(data):
+        tree = m.value
+        for portid in tree:
+            mac = tree[portid]['val']
+            if mac != '' :
+                insert_ifmac(conn, sysname, portid, mac)
+                items[mac] = 1
+
+    return items
+
+def search_mac(conn, data, sysname, ifmacs):
     keyword = 'ipNetToPhysicalPhysAddress'
     expr = parse('$..' + keyword)
 
     for m in expr.find(data):
         tree = m.value
-        for i in tree:
-            if 'ipv4' in tree[i]:
-                for ip in tree[i]['ipv4']:
-                    mac = tree[i]['ipv4'][ip]['val']
-                    insert_ip(conn, mac, ip)
+        for portid in tree:
+            if not 'ipv4' in tree[portid]:
+                continue
+
+            for ip in tree[portid]['ipv4']:
+                mac = tree[portid]['ipv4'][ip]['val']
+                #if mac in ifmacs:
+                #    continue
+
+                insert_mac(conn, sysname, portid, ip, mac)
 
 def search_sysname(conn, data):
     keyword = "['sysName.0']"
@@ -201,8 +283,9 @@ def main():
 
     for filepath in args:
         data = read_json(filepath)
-        search_ip(conn, data)
         sysname = search_sysname(conn, data)
+        ifmacs = search_ifmac(conn, data, sysname)
+        search_mac(conn, data, sysname, ifmacs)
         search_ifname(conn, data, sysname)
 
     #yaml.dump(records,
@@ -222,6 +305,7 @@ def main():
     #)
     #fp.write('\n')
 
+    create_view(conn)
     conn.commit()
     conn.close()
     

@@ -70,11 +70,15 @@ db()
   done
 
   database="database.db"
+  sqlfile="database.sql"
+
+  rm -f ${database}
 
   cmd="python3 json2db.py -o ${database} ${jsonfiles}"
   echo $cmd
   $cmd
-  sqlite3 ${database} ".dump"  
+  sqlite3 ${database} ".dump" > ${sqlfile}
+  cat ${sqlfile}
 }
 
 prepare()
