@@ -55,10 +55,10 @@ class graph():
         fp.write('{0}\n'.format(idt))
 
     str='''
-  { rank = same; dummy40; opnsense40; }
-  { rank = same; dummy50; opnsense50; }
-  { rank = same; dummy60; opnsense60; }
-  { dummy40 -> dummy50 -> dummy60 [minlen=4]; }
+  { rank = same; dummy10; opnsense10; }
+  { rank = same; dummy20; opnsense20; }
+  { rank = same; dummy30; opnsense30; }
+  { dummy10 -> dummy20 -> dummy30 [minlen=4]; }
 '''
     fp.write(str)
 

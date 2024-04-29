@@ -6,6 +6,21 @@ cd $top_dir
 remote="192.168.0.84"
 addrs="192.168.10.1 192.168.20.1 192.168.30.1"
 
+help()
+{
+  cat - << EOF
+usage: sh build.sh <target>
+
+target:
+  snmp
+  json
+  analysis
+  dot
+  png
+  svg
+EOF
+}
+
 all()
 {
   snmp
