@@ -1,3 +1,4 @@
+import sys
 from node import node
 
 class agent(node):
@@ -32,17 +33,19 @@ class agent(node):
         fp.write('{0}'.format(idt))
         if b_first == 1:
             b_first = 0
+            fp.write('{0}'.format(idt))
         else :
+            fp.write('{0}'.format(idt))
             fp.write('|')
 
         #fp.write('<port{1}>port{1}\n'.format(idt, i))
         fp.write('<{0}>{1}\n'.format(port, port))
         i += 1
-    fp.write('\n')
+    #fp.write('\n')
 
     fp.write('{0}  }}}}"\n'.format(idt))
     fp.write('{0}];\n'.format(idt))
-    fp.write('{0}\n'.format(idt))
+    #fp.write('{0}\n'.format(idt))
 
 
 

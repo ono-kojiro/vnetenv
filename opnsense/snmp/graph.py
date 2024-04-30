@@ -60,7 +60,7 @@ class graph():
     fp.write('{0}\n'.format(idt))
 
     for nd in self.nodes :
-        nd.print(fp, indent)
+        nd.print(fp, indent + 2)
     fp.write('{0}\n'.format(idt))
 
     for sg in self.subgraphs:
