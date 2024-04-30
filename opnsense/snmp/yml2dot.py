@@ -192,7 +192,7 @@ def main():
                 mysubgraph.add_node(mypc)
                 mypc.connect("{0}:{1}".format(hostname,ifname))
 
-    mygraph.print(fp)
+    mygraph.print(fp, None)
 
     if output is not None :
         fp.close()

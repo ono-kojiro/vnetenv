@@ -3,9 +3,19 @@ from node import node
 import re
 
 class pc(node):
-  def __init__(self, name):
+  def __init__(self, name, *args):
     super().__init__(self)
     self.name = name
+
+    if len(args) >= 1:
+      self.ip   = args[0]
+    else :
+      self.ip = ''
+
+    if len(args) >= 2:
+      self.mac  = args[1]
+    else :
+      self.mac = ''
 
   def print(self, fp, indent):
     line = ''

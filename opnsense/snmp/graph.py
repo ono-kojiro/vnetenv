@@ -11,7 +11,32 @@ class graph():
     self.subgraphs = []
     self.rankdir = "TB" # Top to Bottom
 
-  def print(self, fp):
+    self.nodes = []
+
+  def add_nodes(self, node):
+    self.nodes.append(node)
+  
+  def add_subgraph(self, sg):
+    self.subgraphs.append(sg)
+
+  def get_edges(self, conn):
+    table = 'conn_view'
+    c = conn.cursor()
+    sql = 'SELECT * FROM {0};'.format(table)
+    rows = c.execute(sql)
+
+    items = []
+    for row in rows:
+        item = {
+            'sysname': row[0],
+            'ifname' : row[1],
+            'ip'     : row[2],
+            'mac'    : row[3],
+        }
+        items.append(item)
+    return items
+
+  def print(self, fp, conn):
     indent = self.indent
     idt = ' ' * indent
     #fp.write('{0}graph {1} {{\n'.format(idt, self.name))
@@ -34,6 +59,10 @@ class graph():
 
     fp.write('{0}\n'.format(idt))
 
+    for nd in self.nodes :
+        nd.print(fp, indent)
+    fp.write('{0}\n'.format(idt))
+
     for sg in self.subgraphs:
         sg.print(fp, indent + 2)
 
@@ -54,6 +83,17 @@ class graph():
                     fp.write('{0}  {1} -> {2} [minlen=2];\n'.format(idt, name, val)) 
         fp.write('{0}\n'.format(idt))
 
+    if conn:
+        fp.write('\n')
+        items = self.get_edges(conn)
+        for item in items :
+            sysname = re.sub(r'\.[^.]*', '', item['sysname'])
+            ifname  = item['ifname']
+            ip      = item['ip']
+            fp.write('{0}{1}:{2} -> "{3}" [minlen=2];\n'.format(idt, sysname, ifname, ip))
+        fp.write('\n')
+
+
     str='''
   { rank = same; dummy10; opnsense10; }
   { rank = same; dummy20; opnsense20; }
@@ -63,9 +103,6 @@ class graph():
     fp.write(str)
 
     fp.write('{0}}}\n'.format(idt))
-
-  def add_subgraph(self, sg):
-    self.subgraphs.append(sg)
 
 if __name__ == '__main__' :
     main()

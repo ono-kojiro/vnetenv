@@ -19,6 +19,7 @@ from graph import graph
 from subgraph import subgraph
 from switch import switch
 from pc import pc
+from agent import agent
 
 def usage():
   print("Usage : {0}".format(sys.argv[0]))
@@ -56,6 +57,33 @@ def get_ip_address(ip2macs, ifaces, macs):
             if mac == target :
                 items[id] = ipv4
     return items
+
+def get_agents(conn):
+    table = 'agent_view'
+    c = conn.cursor()
+    sql = 'SELECT * FROM {0};'.format(table)
+    rows = c.execute(sql)
+
+    agents = {}
+
+    for row in rows:
+        sysname = row[0]
+        ifid    = row[1]
+        ifname  = row[2]
+        mac     = row[3]
+        ip      = row[4]
+
+        sysname = re.sub(r'\.[^.]*', '', sysname)
+        if not sysname in agents:
+            agents[sysname] = {}
+        
+        if not ifname in agents[sysname]:
+            agents[sysname][ifname] = {}
+
+        agents[sysname][ifname]['ip'] = ip
+        agents[sysname][ifname]['mac'] = mac
+
+    return agents
 
 def get_sysnames(conn):
     table = 'sysname_table'
@@ -96,12 +124,16 @@ def get_hosts(conn, segment):
     sql += 'WHERE ip LIKE "{0}"'.format(segment)
     sql += ';'
 
-    print(sql)
+    #print(sql)
     rows = c.execute(sql)
 
     items = []
     for row in rows:
-        items.append(row)
+        item = {
+            'ip'  : row[1],
+            'mac' : row[2],
+        }
+        items.append(item)
 
     return items
 
@@ -175,18 +207,32 @@ def main():
         
         sysnames = get_sysnames(conn)
         segments = get_segments(conn)
-        pprint(sysnames)
-        pprint(segments)
+        #pprint(sysnames)
+        #pprint(segments)
 
         for segment in segments:
-            hosts = get_hosts(conn, segment)
-            pprint(hosts)
-
             mysubgraph = subgraph(segment)
             mygraph.add_subgraph(mysubgraph)
+            
+            hosts = get_hosts(conn, segment)
 
+            for host in hosts:
+                ip  = host['ip']
+                mac = host['mac']
+                mypc = pc(ip, ip, mac)
+                mysubgraph.add_node(mypc)
 
-    mygraph.print(fp)
+        agents = get_agents(conn)
+        print(agents, file=sys.stderr)
+        for name in agents :
+            myagent = agent(name)
+            ports = []
+            for ifname in agents[name]:
+                ports.append(ifname)
+            myagent.set_ports(ports)
+            mygraph.add_nodes(myagent)
+
+    mygraph.print(fp, conn)
 
     if output is not None :
         fp.close()

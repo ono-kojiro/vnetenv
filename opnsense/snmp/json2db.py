@@ -182,7 +182,7 @@ def create_conn_view(conn):
     sql += 'FROM mac_table '
     sql += '  LEFT OUTER JOIN ifmac_table ON mac_table.mac = ifmac_table.mac '
     sql += '  LEFT JOIN ifname_table ON mac_table.sysname = ifname_table.sysname AND mac_table.portid = ifname_table.ifid '
-    sql += 'WHERE ifmac_table.mac IS NULL '
+    #sql += 'WHERE ifmac_table.mac IS NULL '
     sql += ';'
 
     c.execute(sql)

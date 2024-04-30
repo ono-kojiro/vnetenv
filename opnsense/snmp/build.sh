@@ -32,6 +32,7 @@ all()
   db
   analysis
   dot
+  dot2
   png
   svg
 }
@@ -95,9 +96,9 @@ test()
   sqlite3 ${database} "select * from conn_view;"
 }
 
-debug()
+dot2()
 {
-  python3 db2dot.py ${database}
+  python3 db2dot.py ${database} > mygraph2.dot
 }
 
 prepare()
@@ -138,12 +139,14 @@ dot()
 
 png()
 {
-  command dot -Tpng -o mygraph.png mygraph.dot
+  command dot -Tpng -o mygraph.png  mygraph.dot
+  command dot -Tpng -o mygraph2.png mygraph2.dot
 }
 
 svg()
 {
-  command dot -Tsvg -o mygraph.svg mygraph.dot
+  command dot -Tsvg -o mygraph.svg  mygraph.dot
+  command dot -Tsvg -o mygraph2.svg mygraph2.dot
 }
 
 
