@@ -34,6 +34,7 @@ def create_table(conn):
     create_ifmac_table(conn)
     create_mac_table(conn)
     create_ifname_table(conn)
+    create_netmask_table(conn)
 
 def create_ifmac_table(conn):
     table = 'ifmac_table'
@@ -99,10 +100,27 @@ def create_ifname_table(conn):
 
     c.execute(sql)
 
+def create_netmask_table(conn):
+    table = 'netmask_table'
+
+    c = conn.cursor()
+    sql = 'DROP TABLE IF EXISTS {0};'.format(table)
+    c.execute(sql)
+
+    sql = 'CREATE TABLE {0} ('.format(table)
+    sql += 'id INTEGER PRIMARY KEY, '
+    sql += 'sysname TEXT, '
+    sql += 'addr TEXT, '
+    sql += 'netmask TEXT '
+    sql += ');'
+
+    c.execute(sql)
+
 def create_view(conn):
     create_agent_view(conn)
     create_host_view(conn)
     create_conn_view(conn)
+    create_segment_view(conn)
 
 def create_agent_view(conn):
     view = 'agent_view'
@@ -169,6 +187,21 @@ def create_conn_view(conn):
 
     c.execute(sql)
 
+def create_segment_view(conn):
+    view = 'segment_view'
+
+    c = conn.cursor()
+    sql = 'DROP VIEW IF EXISTS {0};'.format(view)
+    c.execute(sql)
+
+    sql = 'CREATE VIEW {0} AS '.format(view)
+    sql += 'SELECT '
+    sql += '  DISTINCT addr, netmask '
+    sql += 'FROM netmask_table '
+    sql += ';'
+
+    c.execute(sql)
+
 def insert_ifname(conn, sysname, ifid, ifname):
     table = 'ifname_table'
 
@@ -216,6 +249,32 @@ def insert_sysname(conn, name):
     sql = 'INSERT INTO {0} VALUES ( NULL, ?);'.format(table)
     item = [
         name,
+    ]
+
+    c.execute(sql, item)
+
+def search_netmask(conn, data, sysname):
+    keyword = 'ipCidrRouteInfo'
+    expr = parse('$..' + keyword)
+
+    items = {}
+
+    for m in expr.find(data):
+        tree = m.value
+        for addr in tree:
+            for mask in tree[addr]:
+                if mask != '0.0.0.0' :
+                    insert_netmask(conn, sysname, addr, mask)
+
+def insert_netmask(conn, sysname, addr, netmask):
+    table = 'netmask_table'
+
+    c = conn.cursor()
+    sql = 'INSERT INTO {0} VALUES ( NULL, ?, ?, ? );'.format(table)
+    item = [
+        sysname,
+        addr,
+        netmask
     ]
 
     c.execute(sql, item)
@@ -331,6 +390,7 @@ def main():
         ifmacs = search_ifmac(conn, data, sysname)
         search_mac(conn, data, sysname, ifmacs)
         search_ifname(conn, data, sysname)
+        search_netmask(conn, data, sysname)
 
     #yaml.dump(records,
     #    fp,

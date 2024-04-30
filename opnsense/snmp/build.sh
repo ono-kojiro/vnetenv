@@ -29,6 +29,7 @@ all()
 {
   snmp
   json
+  db
   analysis
   dot
   png
@@ -92,6 +93,11 @@ test()
   
   echo "INFO: conn_view"
   sqlite3 ${database} "select * from conn_view;"
+}
+
+debug()
+{
+  python3 db2dot.py ${database}
 }
 
 prepare()
