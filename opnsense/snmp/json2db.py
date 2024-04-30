@@ -46,7 +46,7 @@ def create_ifmac_table(conn):
     sql = 'CREATE TABLE {0} ('.format(table)
     sql += 'id INTEGER PRIMARY KEY, '
     sql += 'sysname TEXT, '
-    sql += 'portid INTEGER, '
+    sql += 'ifid INTEGER, '
     sql += 'mac  TEXT '
     sql += ');'
 
@@ -63,7 +63,7 @@ def create_mac_table(conn):
     sql = 'CREATE TABLE {0} ('.format(table)
     sql += 'id INTEGER PRIMARY KEY, '
     sql += 'sysname TEXT, '
-    sql += 'portid INTEGER, '
+    sql += 'ifid INTEGER, '
     sql += 'ip TEXT, '
     sql += 'mac  TEXT '
     sql += ');'
@@ -138,8 +138,8 @@ def create_agent_view(conn):
     sql += '  ifmac_table.mac AS mac, '
     sql += '  mac_table.ip  AS ip '
     sql += 'FROM ifname_table '
-    sql += 'LEFT JOIN ifmac_table ON ifname_table.sysname = ifmac_table.sysname AND ifname_table.ifid = ifmac_table.portid '
-    sql += 'LEFT JOIN mac_table ON ifname_table.sysname = mac_table.sysname AND ifname_table.ifid = mac_table.portid AND ifmac_table.mac = mac_table.mac '
+    sql += 'LEFT JOIN ifmac_table ON ifname_table.sysname = ifmac_table.sysname AND ifname_table.ifid = ifmac_table.ifid '
+    sql += 'LEFT JOIN mac_table ON ifname_table.sysname = mac_table.sysname AND ifname_table.ifid = mac_table.ifid AND ifmac_table.mac = mac_table.mac '
     sql += 'WHERE ifmac_table.mac != "" '
     sql += ';'
 
@@ -155,7 +155,7 @@ def create_host_view(conn):
     sql = 'CREATE VIEW {0} AS '.format(view)
     sql += 'SELECT '
     sql += '  mac_table.sysname AS sysname, '
-    sql += '  mac_table.portid AS portid, '
+    sql += '  mac_table.ifid AS ifid, '
     sql += '  mac_table.ip  AS ip, '
     sql += '  mac_table.mac AS mac, '
     sql += '  ifmac_table.mac AS mac2 '
@@ -177,13 +177,13 @@ def create_ifip_view(conn):
     sql = 'CREATE VIEW {0} AS '.format(view)
     sql += 'SELECT '
     sql += '  ifmac_table.sysname AS sysname, '
-    sql += '  ifmac_table.portid AS ifid, '
+    sql += '  ifmac_table.ifid AS ifid, '
     sql += '  ifname_table.ifname AS ifname, '
     sql += '  mac_table.ip AS ip, '
     sql += '  ifmac_table.mac AS mac '
     sql += 'FROM ifmac_table '
-    sql += '  LEFT JOIN ifname_table ON ifmac_table.sysname = ifname_table.sysname AND ifmac_table.portid = ifname_table.ifid '
-    sql += '  LEFT JOIN mac_table ON ifmac_table.sysname = mac_table.sysname AND ifmac_table.portid = mac_table.portid AND ifmac_table.mac = mac_table.mac '
+    sql += '  LEFT JOIN ifname_table ON ifmac_table.sysname = ifname_table.sysname AND ifmac_table.ifid = ifname_table.ifid '
+    sql += '  LEFT JOIN mac_table ON ifmac_table.sysname = mac_table.sysname AND ifmac_table.ifid = mac_table.ifid AND ifmac_table.mac = mac_table.mac '
     sql += ';'
 
     c.execute(sql)
@@ -203,7 +203,7 @@ def create_conn_view(conn):
     sql += '  mac_table.mac AS mac '
     sql += 'FROM mac_table '
     sql += '  LEFT OUTER JOIN ifmac_table ON mac_table.mac = ifmac_table.mac '
-    sql += '  LEFT JOIN ifname_table ON mac_table.sysname = ifname_table.sysname AND mac_table.portid = ifname_table.ifid '
+    sql += '  LEFT JOIN ifname_table ON mac_table.sysname = ifname_table.sysname AND mac_table.ifid = ifname_table.ifid '
     #sql += 'WHERE ifmac_table.mac IS NULL '
     sql += ';'
 
@@ -237,27 +237,27 @@ def insert_ifname(conn, sysname, ifid, ifname):
 
     c.execute(sql, item)
 
-def insert_ifmac(conn, sysname, portid, mac):
+def insert_ifmac(conn, sysname, ifid, mac):
     table = 'ifmac_table'
 
     c = conn.cursor()
     sql = 'INSERT INTO {0} VALUES ( NULL, ?, ?, ? );'.format(table)
     item = [
         sysname,
-        portid,
+        ifid,
         mac,
     ]
 
     c.execute(sql, item)
 
-def insert_mac(conn, sysname, portid, ip, mac):
+def insert_mac(conn, sysname, ifid, ip, mac):
     table = 'mac_table'
 
     c = conn.cursor()
     sql = 'INSERT INTO {0} VALUES ( NULL, ?, ?, ?, ? );'.format(table)
     item = [
         sysname,
-        portid,
+        ifid,
         ip,
         mac,
     ]
@@ -309,10 +309,10 @@ def search_ifmac(conn, data, sysname):
 
     for m in expr.find(data):
         tree = m.value
-        for portid in tree:
-            mac = tree[portid]['val']
+        for ifid in tree:
+            mac = tree[ifid]['val']
             if mac != '' :
-                insert_ifmac(conn, sysname, portid, mac)
+                insert_ifmac(conn, sysname, ifid, mac)
                 items[mac] = 1
 
     return items
@@ -323,16 +323,16 @@ def search_mac(conn, data, sysname, ifmacs):
 
     for m in expr.find(data):
         tree = m.value
-        for portid in tree:
-            if not 'ipv4' in tree[portid]:
+        for ifid in tree:
+            if not 'ipv4' in tree[ifid]:
                 continue
 
-            for ip in tree[portid]['ipv4']:
-                mac = tree[portid]['ipv4'][ip]['val']
+            for ip in tree[ifid]['ipv4']:
+                mac = tree[ifid]['ipv4'][ip]['val']
                 #if mac in ifmacs:
                 #    continue
 
-                insert_mac(conn, sysname, portid, ip, mac)
+                insert_mac(conn, sysname, ifid, ip, mac)
 
 def search_sysname(conn, data):
     keyword = "['sysName.0']"

@@ -35,6 +35,29 @@ class graph():
         }
         items.append(item)
     return items
+  
+  def get_agents(self, conn):
+    table = 'agent_view'
+    c = conn.cursor()
+    sql = 'SELECT * FROM {0};'.format(table)
+    rows = c.execute(sql)
+
+    items = {}
+    for row in rows:
+        sysname = row[0]
+        ifid    = row[1]
+        ifname  = row[2]
+        mac     = row[3]
+        ip      = row[4]
+
+        if not sysname in items:
+            items[sysname] = {}
+        if not ifname in items[sysname]:
+            items[sysname][ifname] = {
+                'ip' : ip,
+                'mac' : mac,
+            }
+    return items
 
   def print(self, fp, conn):
     indent = self.indent
@@ -85,13 +108,20 @@ class graph():
 
     if conn:
         fp.write('\n')
-        items = self.get_edges(conn)
-        for item in items :
-            sysname = re.sub(r'\.[^.]*', '', item['sysname'])
-            ifname  = item['ifname']
-            ip      = item['ip']
+        edges  = self.get_edges(conn)
+
+        agents = self.get_agents(conn)
+
+        for edge in edges :
+            sysname = edge['sysname']
+            ifname  = edge['ifname']
+            ip      = edge['ip']
+
+            agent_ip = agents[sysname][ifname]['ip']
+            sysname = re.sub(r'\.[^.]*', '', sysname)
+
             #fp.write('{0}{1}:{2} -> "{3}" [minlen=2];\n'.format(idt, sysname, ifname, ip))
-            fp.write('{0}{1}:"{2}" -> "{3}" [minlen=2];\n'.format(idt, sysname, ifname, ip))
+            fp.write('{0}{1}:"{2}" -> "{3}" [minlen=2];\n'.format(idt, sysname, agent_ip, ip))
         fp.write('\n')
 
 
