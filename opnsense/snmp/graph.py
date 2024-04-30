@@ -90,7 +90,8 @@ class graph():
             sysname = re.sub(r'\.[^.]*', '', item['sysname'])
             ifname  = item['ifname']
             ip      = item['ip']
-            fp.write('{0}{1}:{2} -> "{3}" [minlen=2];\n'.format(idt, sysname, ifname, ip))
+            #fp.write('{0}{1}:{2} -> "{3}" [minlen=2];\n'.format(idt, sysname, ifname, ip))
+            fp.write('{0}{1}:"{2}" -> "{3}" [minlen=2];\n'.format(idt, sysname, ifname, ip))
         fp.write('\n')
 
 

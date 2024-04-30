@@ -121,6 +121,7 @@ def create_view(conn):
     create_host_view(conn)
     create_conn_view(conn)
     create_segment_view(conn)
+    create_ifip_view(conn)
 
 def create_agent_view(conn):
     view = 'agent_view'
@@ -162,6 +163,27 @@ def create_host_view(conn):
     sql += 'LEFT OUTER JOIN ifmac_table ON '
     sql += '  mac_table.mac     = ifmac_table.mac '
     sql += 'WHERE ifmac_table.mac IS NULL '
+    sql += ';'
+
+    c.execute(sql)
+
+def create_ifip_view(conn):
+    view = 'ifip_view'
+
+    c = conn.cursor()
+    sql = 'DROP VIEW IF EXISTS {0};'.format(view)
+    c.execute(sql)
+
+    sql = 'CREATE VIEW {0} AS '.format(view)
+    sql += 'SELECT '
+    sql += '  ifmac_table.sysname AS sysname, '
+    sql += '  ifmac_table.portid AS ifid, '
+    sql += '  ifname_table.ifname AS ifname, '
+    sql += '  mac_table.ip AS ip, '
+    sql += '  ifmac_table.mac AS mac '
+    sql += 'FROM ifmac_table '
+    sql += '  LEFT JOIN ifname_table ON ifmac_table.sysname = ifname_table.sysname AND ifmac_table.portid = ifname_table.ifid '
+    sql += '  LEFT JOIN mac_table ON ifmac_table.sysname = mac_table.sysname AND ifmac_table.portid = mac_table.portid AND ifmac_table.mac = mac_table.mac '
     sql += ';'
 
     c.execute(sql)

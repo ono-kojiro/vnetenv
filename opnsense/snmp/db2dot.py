@@ -228,7 +228,12 @@ def main():
             myagent = agent(name)
             ports = []
             for ifname in agents[name]:
-                ports.append(ifname)
+                ip = agents[name][ifname]['ip']
+                port = {
+                    'name': ifname,
+                    'ip'  : ip,
+                }
+                ports.append(port)
             myagent.set_ports(ports)
             mygraph.add_nodes(myagent)
 
