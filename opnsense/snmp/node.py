@@ -10,9 +10,19 @@ class node():
     self.edges.append(label)
 
   def print(self, fp, indent):
+    #fp.write('{0}{1} [\n'.format(idt, self.name))
+    #fp.write('{0}  label="{1}"\n'.format(idt, self.name))
+    #fp.write('{0}];\n'.format(idt))
+    #fp.write('{0}\n'.format(idt))
+    
+    line = ''
+    line += '{0} [\n'.format(self.name)
+    line += '  label="{0}"\n'.format(self.name)
+    line += '];\n'
+    line += '\n'
+    
     idt = ' ' * indent
-    fp.write('{0}{1} [\n'.format(idt, self.name))
-    fp.write('{0}  label="{1}"\n'.format(idt, self.name))
-    fp.write('{0}];\n'.format(idt))
-    fp.write('{0}\n'.format(idt))
+    tokens = re.split(r'\n', line)
+    for token in tokens :
+        fp.write('{0}{1}\n'.format(idt, token))
 
