@@ -59,6 +59,24 @@ class graph():
             }
     return items
 
+  def get_agent_aliases(self, conn):
+    table = 'agent_view'
+    c = conn.cursor()
+    sql = 'SELECT * FROM {0};'.format(table)
+    rows = c.execute(sql)
+
+    items = {}
+    for row in rows:
+        sysname = row[0]
+        ifid    = row[1]
+        ifname  = row[2]
+        mac     = row[3]
+        ip      = row[4]
+
+        sysname = re.sub(r'\.[^.]+', '', sysname)
+        items[ip] = "{0}:\"{1}\"".format(sysname, ip)
+    return items
+
   def print(self, fp, conn):
     indent = self.indent
     idt = ' ' * indent
@@ -108,9 +126,9 @@ class graph():
 
     if conn:
         fp.write('\n')
-        edges  = self.get_edges(conn)
-
-        agents = self.get_agents(conn)
+        edges   = self.get_edges(conn)
+        agents  = self.get_agents(conn)
+        aliases = self.get_agent_aliases(conn)
 
         for edge in edges :
             sysname = edge['sysname']
@@ -120,15 +138,30 @@ class graph():
             agent_ip = agents[sysname][ifname]['ip']
             sysname = re.sub(r'\.[^.]*', '', sysname)
 
+            if agent_ip == ip :
+                continue
+
+            src = "{0}:\"{1}\"".format(sysname, agent_ip)
+            if ip in aliases:
+                dst = aliases[ip]
+            else :
+                dst = "\"{0}\"".format(ip) 
+            fp.write('{0}{1} -> {2} [minlen=2];\n'.format(idt, src, dst))
+
             #fp.write('{0}{1}:{2} -> "{3}" [minlen=2];\n'.format(idt, sysname, ifname, ip))
-            fp.write('{0}{1}:"{2}" -> "{3}" [minlen=2];\n'.format(idt, sysname, agent_ip, ip))
+            #if ip in aliases :
+            #    fp.write('{0}{1}:"{2}" -> {3} [minlen=2];\n'.format(idt, sysname, agent_ip, aliases[ip]))
+            #else :
+            #    fp.write('{0}{1}:"{2}" -> "{3}" [minlen=2];\n'.format(idt, sysname, agent_ip, ip))
         fp.write('\n')
 
 
     str='''
+  { rank = same; dummy1;  "192.168.1.1"; }
   { rank = same; dummy10; opnsense10; }
   { rank = same; dummy20; opnsense20; }
   { rank = same; dummy30; opnsense30; }
+  { dummy1 -> dummy10 [minlen=4]; }
   { dummy10 -> dummy20 -> dummy30 [minlen=4]; }
 '''
     fp.write(str)

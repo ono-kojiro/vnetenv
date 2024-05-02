@@ -35,6 +35,7 @@ def create_table(conn):
     create_mac_table(conn)
     create_ifname_table(conn)
     create_netmask_table(conn)
+    create_defaultrouter_table(conn)
 
 def create_ifmac_table(conn):
     table = 'ifmac_table'
@@ -115,6 +116,22 @@ def create_netmask_table(conn):
     sql += ');'
 
     c.execute(sql)
+
+def create_defaultrouter_table(conn):
+    table = 'defaultrouter_table'
+
+    c = conn.cursor()
+    sql = 'DROP TABLE IF EXISTS {0};'.format(table)
+    c.execute(sql)
+
+    sql = 'CREATE TABLE {0} ('.format(table)
+    sql += 'id INTEGER PRIMARY KEY, '
+    sql += 'sysname TEXT, '
+    sql += 'addr TEXT '
+    sql += ');'
+
+    c.execute(sql)
+
 
 def create_view(conn):
     create_agent_view(conn)
@@ -237,6 +254,19 @@ def insert_ifname(conn, sysname, ifid, ifname):
 
     c.execute(sql, item)
 
+def insert_defaultrouter(conn, sysname, addr):
+    table = 'defaultrouter_table'
+
+    c = conn.cursor()
+    sql = 'INSERT INTO {0} VALUES ( NULL, ?, ? );'.format(table)
+    item = [
+        sysname,
+        addr,
+    ]
+
+    c.execute(sql, item)
+
+
 def insert_ifmac(conn, sysname, ifid, mac):
     table = 'ifmac_table'
 
@@ -287,6 +317,20 @@ def search_netmask(conn, data, sysname):
             for mask in tree[addr]:
                 if mask != '0.0.0.0' :
                     insert_netmask(conn, sysname, addr, mask)
+
+def search_defaultrouter(conn, data, sysname):
+    keyword = 'ipDefaultRouterLifetime'
+    expr = parse('$..' + keyword)
+
+    items = {}
+
+    for m in expr.find(data):
+        tree = m.value
+        if not 'ipv4' in tree:
+            continue
+
+        for addr in tree['ipv4']:
+            insert_defaultrouter(conn, sysname, addr)
 
 def insert_netmask(conn, sysname, addr, netmask):
     table = 'netmask_table'
@@ -413,6 +457,7 @@ def main():
         search_mac(conn, data, sysname, ifmacs)
         search_ifname(conn, data, sysname)
         search_netmask(conn, data, sysname)
+        search_defaultrouter(conn, data, sysname)
 
     #yaml.dump(records,
     #    fp,
