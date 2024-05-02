@@ -1,3 +1,4 @@
+import re
 from node import node
 
 class switch(node):
@@ -20,28 +21,29 @@ class switch(node):
     self.cons[port_id].append(node_name)
     
   def print(self, fp, indent):
-    idt = ' ' * indent
-    fp.write('{0}"{1}" [\n'.format(idt, self.name))
-    fp.write('{0}  shape=record\n'.format(idt))
-    fp.write('{0}  label="{{{1}|{{\n'.format(idt, self.name))
+    line = ''
+    line += '"{0}" [\n'.format(self.name)
+    line += '  shape=record\n'
+    line += '  label="{{{0}|{{\n'.format(self.name)
+
     b_first = 1
-    #for i in range(self.port_num):
     i = 0
     for port in self.ports :
-        fp.write('{0}'.format(idt))
         if b_first == 1:
             b_first = 0
         else :
-            fp.write('|')
+            line += '|'
 
-        #fp.write('<port{1}>port{1}\n'.format(idt, i))
-        fp.write('<{0}>{1}\n'.format(port, port))
+        line += '<{0}>{1}\n'.format(port, port)
         i += 1
-    fp.write('\n')
+    line += '\n'
 
-    fp.write('{0}  }}}}"\n'.format(idt))
-    fp.write('{0}];\n'.format(idt))
-    fp.write('{0}\n'.format(idt))
+    line += '  }}}}"\n'
+    line += '];\n'
+    line += '\n'
 
-
+    idt = ' ' * indent
+    tokens = re.split(r'\n', line)
+    for token in tokens :
+        fp.write('{0}{1}\n'.format(idt, token))
 
