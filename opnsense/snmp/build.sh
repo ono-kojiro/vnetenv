@@ -22,6 +22,7 @@ target:
   dot
   png
   svg
+  pdf
 EOF
 }
 
@@ -30,11 +31,9 @@ all()
   snmp
   json
   db
-  analysis
-  dot
+  #analysis
   dot2
-  png
-  svg
+  pdf
 }
 
 snmp()
@@ -98,7 +97,8 @@ test()
 
 dot2()
 {
-  cmd="python3 db2dot.py -o mygraph2.dot -i custom.dot ${database}"
+  #cmd="python3 db2dot.py -o mygraph2.dot -i custom.dot ${database}"
+  cmd="python3 db2dot.py -o mygraph2.dot ${database}"
   echo $cmd
   $cmd
 }
@@ -156,6 +156,16 @@ svg()
   echo $cmd
   $cmd
   cmd="command dot -Tsvg -o mygraph2.svg mygraph2.dot"
+  echo $cmd
+  $cmd
+}
+
+pdf()
+{
+  cmd="command dot -Tpdf -o mygraph.pdf  mygraph.dot"
+  echo $cmd
+  $cmd
+  cmd="command dot -Tpdf -o mygraph2.pdf mygraph2.dot"
   echo $cmd
   $cmd
 }

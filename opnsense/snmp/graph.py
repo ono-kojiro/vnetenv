@@ -136,10 +136,12 @@ class graph():
                 else :
                     src = name
                     dst = val
-                
-                fp.write('{0}  {1} -> {2} [minlen=2];\n'.format(idt, src, dst))
+    
+                minlen = 2
+                fp.write('{0}  {1} -> {2}'.format(idt, src, dst))
+                fp.write(' [minlen={0}];\n'.format(minlen))
 
-        fp.write('{0}\n'.format(idt))
+    fp.write('{0}\n'.format(idt))
 
     if conn:
         fp.write('\n')
@@ -164,12 +166,18 @@ class graph():
                 dst = aliases[ip]
             else :
                 dst = "\"{0}\"".format(ip)
-                if ip  in routers:
-                    tmp = src
-                    src = dst
-                    dst = tmp
-
-            fp.write('{0}  {1} -> {2} [minlen=2];\n'.format(idt, src, dst))
+            
+            if ip  in routers:
+                tmp = src
+                src = dst
+                dst = tmp
+            
+            minlen = 2
+            #print('src: {0}, dst: {1}'.format(src,dst), file=sys.stderr)
+            if re.search(r'.+\:.+', src) and re.search(r'.+\:.+', dst) :
+                minlen = 4
+            fp.write('{0}  {1} -> {2}'.format(idt, src, dst))
+            fp.write('[minlen={0}];\n'.format(minlen))
         fp.write('\n')
 
 

@@ -33,7 +33,8 @@ class pc(node):
         line += '  label=<\n'
         line += '    <table cellspacing="0" border="0" cellborder="0">\n'
         line += '      <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>\n'
-        line += '      <tr><td>{0}</td></tr>\n'.format(self.name)
+        line += '      <tr><td>ip:  {0}</td></tr>\n'.format(self.name)
+        line += '      <tr><td>mac: {0}</td></tr>\n'.format(self.mac)
         line += '    </table>\n'
         line += '  >\n'
         line += ']\n'

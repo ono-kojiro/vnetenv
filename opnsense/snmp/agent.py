@@ -1,4 +1,5 @@
 import sys
+import re
 from node import node
 
 class agent(node):
@@ -23,32 +24,36 @@ class agent(node):
     
   def print(self, fp, indent):
     idt = ' ' * indent
-    fp.write('{0}"{1}" [\n'.format(idt, self.name))
-    fp.write('{0}  shape=record\n'.format(idt))
-    fp.write('{0}  label="{{{1}|{{\n'.format(idt, self.name))
+
+    line = ''
+    line += '"{0}" [\n'.format(self.name)
+    line += '  shape=record\n'
+    line += '  label="{\n'
+    line += '    {{{0}}}|\n'.format(self.name)
+    line += '    {SNMP Agent}|\n'
+    line += '    {\n'
     b_first = 1
-    #for i in range(self.port_num):
     i = 0
     for port in self.ports :
         name = port['name']
         ip   = port['ip']
 
-        fp.write('{0}'.format(idt))
+        line += '      '
         if b_first == 1:
             b_first = 0
-            fp.write('{0}'.format(idt))
         else :
-            fp.write('{0}'.format(idt))
-            fp.write('|')
+            line += '|'
 
-        #fp.write('<port{1}>port{1}\n'.format(idt, i))
-        fp.write('<{0}>{1}\n'.format(ip, name))
+        line += '<{0}>{1}&#92;n{0}'.format(ip, name)
+        line += '\n'
         i += 1
-    #fp.write('\n')
 
-    fp.write('{0}  }}}}"\n'.format(idt))
-    fp.write('{0}];\n'.format(idt))
-    #fp.write('{0}\n'.format(idt))
+    line += '    }\n'
+    line += '  }"\n'
+    line += '];\n'
 
-
+    idt = ' ' * indent
+    tokens = re.split(r'\n', line)
+    for token in tokens :
+        fp.write('{0}{1}\n'.format(idt, token))
 
