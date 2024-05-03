@@ -44,7 +44,7 @@ class agent(node):
         else :
             line += '|'
 
-        line += '<{0}>{1}'.format(ip, name)
+        line += '<{0}>{1}&#92;n{0}'.format(ip, name)
         line += '\n'
         i += 1
 

@@ -97,7 +97,8 @@ test()
 
 dot2()
 {
-  cmd="python3 db2dot.py -o mygraph2.dot -i custom.dot ${database}"
+  #cmd="python3 db2dot.py -o mygraph2.dot -i custom.dot ${database}"
+  cmd="python3 db2dot.py -o mygraph2.dot ${database}"
   echo $cmd
   $cmd
 }
