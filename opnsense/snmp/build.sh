@@ -4,7 +4,7 @@ top_dir="$(cd "$(dirname "$0")" > /dev/null 2>&1 && pwd)"
 cd $top_dir
 
 remote="192.168.0.84"
-addrs="192.168.10.1 192.168.20.1 192.168.30.1"
+addrs="192.168.10.1 192.168.20.1 192.168.30.1 192.168.31.1"
 
 database="database.db"
 sqlfile="database.sql"
@@ -81,7 +81,7 @@ db()
   echo $cmd
   $cmd
   sqlite3 ${database} ".dump" > ${sqlfile}
-  cat ${sqlfile}
+  #cat ${sqlfile}
 }
 
 test()
@@ -98,7 +98,9 @@ test()
 
 dot2()
 {
-  python3 db2dot.py ${database} > mygraph2.dot
+  cmd="python3 db2dot.py -o mygraph2.dot -i custom.dot ${database}"
+  echo $cmd
+  $cmd
 }
 
 prepare()
@@ -131,7 +133,7 @@ dot()
     ymlfiles="$ymlfiles ${addr}.yml"
   done
   
-  cmd="python3 yml2dot.py -o mygraph.dot $ymlfiles"
+  cmd="python3 yml2dot.py -o mygraph.dot -i custom.dot $ymlfiles"
   echo $cmd
   $cmd
   #cat mygraph.dot
@@ -139,14 +141,23 @@ dot()
 
 png()
 {
-  command dot -Tpng -o mygraph.png  mygraph.dot
-  command dot -Tpng -o mygraph2.png mygraph2.dot
+  cmd="command dot -Tpng -o mygraph.png  mygraph.dot"
+  echo $cmd
+  $cmd
+
+  cmd="command dot -Tpng -o mygraph2.png mygraph2.dot"
+  echo $cmd
+  $cmd
 }
 
 svg()
 {
-  command dot -Tsvg -o mygraph.svg  mygraph.dot
-  command dot -Tsvg -o mygraph2.svg mygraph2.dot
+  cmd="command dot -Tsvg -o mygraph.svg  mygraph.dot"
+  echo $cmd
+  $cmd
+  cmd="command dot -Tsvg -o mygraph2.svg mygraph2.dot"
+  echo $cmd
+  $cmd
 }
 
 

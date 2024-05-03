@@ -143,11 +143,12 @@ def main():
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
-            "hvo:",
+            "hvo:i:",
             [
                 "help",
                 "version",
                 "output=",
+                "include=",
             ]
         )
     except getopt.GetoptError as err:
@@ -155,6 +156,7 @@ def main():
         sys.exit(2)
     
     output = None
+    includes_dot = []
     
     for o, a in opts:
         if o == "-v":
@@ -165,6 +167,8 @@ def main():
             sys.exit(0)
         elif o in ("-o", "--output"):
             output = a
+        elif o in ("-i", "--include"):
+            includes_dot.append(a)
         else:
             assert False, "unknown option"
     
@@ -223,7 +227,7 @@ def main():
                 mysubgraph.add_node(mypc)
 
         agents = get_agents(conn)
-        print(agents, file=sys.stderr)
+        #print(agents, file=sys.stderr)
         for name in agents :
             myagent = agent(name)
             ports = []
@@ -237,7 +241,7 @@ def main():
             myagent.set_ports(ports)
             mygraph.add_nodes(myagent)
 
-    mygraph.print(fp, conn)
+    mygraph.print(fp, conn, includes_dot)
 
     if output is not None :
         fp.close()

@@ -77,7 +77,20 @@ class graph():
         items[ip] = "{0}:\"{1}\"".format(sysname, ip)
     return items
 
-  def print(self, fp, conn):
+  def get_defaultrouters(self, conn):
+    table = 'defaultrouter_table'
+    c = conn.cursor()
+    sql = 'SELECT * FROM {0};'.format(table)
+    rows = c.execute(sql)
+
+    items = {}
+    for row in rows:
+        item = row[2]
+        items[item] = 1
+    return items
+
+
+  def print(self, fp, conn, includes_dot):
     indent = self.indent
     idt = ' ' * indent
     #fp.write('{0}graph {1} {{\n'.format(idt, self.name))
@@ -117,11 +130,15 @@ class graph():
                 else :
                     val = nd.name
 
-                #fp.write('{0}  {1} -- {2};\n'.format(idt, name, val)) 
                 if re.search(':vtnet', name) and re.search(':vtnet', val) :
-                    fp.write('{0}  {1} -> {2} [minlen=2];\n'.format(idt, val,  name)) 
+                    src = val
+                    dst = name
                 else :
-                    fp.write('{0}  {1} -> {2} [minlen=2];\n'.format(idt, name, val)) 
+                    src = name
+                    dst = val
+                
+                fp.write('{0}  {1} -> {2} [minlen=2];\n'.format(idt, src, dst))
+
         fp.write('{0}\n'.format(idt))
 
     if conn:
@@ -129,6 +146,7 @@ class graph():
         edges   = self.get_edges(conn)
         agents  = self.get_agents(conn)
         aliases = self.get_agent_aliases(conn)
+        routers = self.get_defaultrouters(conn)
 
         for edge in edges :
             sysname = edge['sysname']
@@ -145,26 +163,22 @@ class graph():
             if ip in aliases:
                 dst = aliases[ip]
             else :
-                dst = "\"{0}\"".format(ip) 
-            fp.write('{0}{1} -> {2} [minlen=2];\n'.format(idt, src, dst))
+                dst = "\"{0}\"".format(ip)
 
-            #fp.write('{0}{1}:{2} -> "{3}" [minlen=2];\n'.format(idt, sysname, ifname, ip))
-            #if ip in aliases :
-            #    fp.write('{0}{1}:"{2}" -> {3} [minlen=2];\n'.format(idt, sysname, agent_ip, aliases[ip]))
-            #else :
-            #    fp.write('{0}{1}:"{2}" -> "{3}" [minlen=2];\n'.format(idt, sysname, agent_ip, ip))
+            if '"' + dst + '"' in routers:
+                tmp = src
+                src = dst
+                dst = tmp
+
+            fp.write('{0}{1} -> {2} [minlen=2];\n'.format(idt, src, dst))
         fp.write('\n')
 
 
-    str='''
-  { rank = same; dummy1;  "192.168.1.1"; }
-  { rank = same; dummy10; opnsense10; }
-  { rank = same; dummy20; opnsense20; }
-  { rank = same; dummy30; opnsense30; }
-  { dummy1 -> dummy10 [minlen=4]; }
-  { dummy10 -> dummy20 -> dummy30 [minlen=4]; }
-'''
-    fp.write(str)
+    for include_dot in includes_dot :
+        fp_in = open(include_dot, mode="r", encoding="utf-8")
+        lines = fp_in.read()
+        fp.write(lines)
+        fp_in.close()
 
     fp.write('{0}}}\n'.format(idt))
 

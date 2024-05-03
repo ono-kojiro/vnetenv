@@ -61,11 +61,12 @@ def main():
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
-            "hvo:",
+            "hvo:i:",
             [
                 "help",
                 "version",
                 "output=",
+                "include=",
             ]
         )
     except getopt.GetoptError as err:
@@ -73,6 +74,7 @@ def main():
         sys.exit(2)
     
     output = None
+    includes_dot = []
     
     for o, a in opts:
         if o == "-v":
@@ -83,6 +85,8 @@ def main():
             sys.exit(0)
         elif o in ("-o", "--output"):
             output = a
+        elif o in ("-i", "--include"):
+            includes_dot.append(a)
         else:
             assert False, "unknown option"
     
@@ -192,7 +196,7 @@ def main():
                 mysubgraph.add_node(mypc)
                 mypc.connect("{0}:{1}".format(hostname,ifname))
 
-    mygraph.print(fp, None)
+    mygraph.print(fp, None, includes_dot)
 
     if output is not None :
         fp.close()
