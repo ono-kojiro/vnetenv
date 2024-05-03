@@ -1,0 +1,94 @@
+---
+- name: set ipfw_load
+  community.general.sysrc:
+    name:  ipfw_load
+    value: "YES"
+    path:  /boot/loader.conf
+
+- name: set ipdivert_load
+  community.general.sysrc:
+    name:  ipdivert_load
+    value: "YES"
+    path:  /boot/loader.conf
+
+#
+#  Name may only contain alpha-numeric and underscore characters
+#
+#- name: set net.inet.ip.fw.default_to_accept
+#  community.general.sysrc:
+#    name:  "net.inet.ip.fw.default_to_accept"
+#    value: "1"
+#    path:  /boot/loader.conf
+
+- name: remove net.inet.ip.fw.default_to_accept
+  ansible.builtin.lineinfile:
+    path: /boot/loader.conf
+    regexp: '^net.inet.ip.fw.default_to_accept='
+    state: absent
+
+- name: add net.inet.ip.fw.default_to_accept
+  ansible.builtin.lineinfile:
+    path: /boot/loader.conf
+    line:   'net.inet.ip.fw.default_to_accept="1"'
+    state: present
+
+- name: enable gateway
+  community.general.sysrc:
+    name: gateway_enable
+    value: "YES"
+
+- name: enable firewall
+  community.general.sysrc:
+    name: firewall_enable
+    value: "YES"
+
+- name: open firewall
+  community.general.sysrc:
+    name: firewall_type
+    value: "OPEN"
+
+- name: append bridge1
+  community.general.sysrc:
+    name: cloned_interfaces
+    value: "bridge1"
+    state: value_present
+
+- name: ifconfig bridge1
+  community.general.sysrc:
+    name: ifconfig_bridge1
+    value: "inet 192.168.1.1/24 up"
+    state: present
+
+- name: enable NAT
+  community.general.sysrc:
+    name: natd_enable
+    value: "YES"
+    state: present
+
+- name: set NAT interface
+  community.general.sysrc:
+    name: natd_interface
+    value: "bridge0"
+    state: present
+
+- name: natd_flags
+  community.general.sysrc:
+    name: natd_flags
+    value: "-f /etc/natd.conf"
+    state: present
+
+- name: copy natd.conf
+  ansible.builtin.template:
+    src:   natd.conf
+    dest:  /etc/natd.conf
+
+- name: start natd
+  ansible.builtin.service:
+    name:  natd
+    state: restarted
+
+- name: restart netif
+  ansible.builtin.service:
+    name: netif
+    state: restarted
+
