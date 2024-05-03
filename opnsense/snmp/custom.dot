@@ -1,0 +1,8 @@
+  { rank = same; dummy1;  "192.168.1.1"; }
+  { rank = same; dummy10; opnsense10; }
+  { rank = same; dummy20; opnsense20; }
+  { rank = same; dummy30; opnsense30; }
+  { rank = same; dummy30; opnsense30; opnsense31; }
+  { dummy1 -> dummy10 [minlen=4]; }
+  { dummy10 -> dummy20 -> dummy30 [minlen=4]; }
+

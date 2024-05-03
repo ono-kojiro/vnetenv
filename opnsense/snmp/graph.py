@@ -164,13 +164,12 @@ class graph():
                 dst = aliases[ip]
             else :
                 dst = "\"{0}\"".format(ip)
+                if ip  in routers:
+                    tmp = src
+                    src = dst
+                    dst = tmp
 
-            if '"' + dst + '"' in routers:
-                tmp = src
-                src = dst
-                dst = tmp
-
-            fp.write('{0}{1} -> {2} [minlen=2];\n'.format(idt, src, dst))
+            fp.write('{0}  {1} -> {2} [minlen=2];\n'.format(idt, src, dst))
         fp.write('\n')
 
 
