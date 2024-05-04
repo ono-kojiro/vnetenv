@@ -29,7 +29,35 @@ def str2dict(data, oid, typ, val) :
         data = data[token]
     data['typ'] = typ
     data['val'] = val
-    
+
+def parse(fp, data):
+    while True:
+        line = fp.readline()
+        if not line:
+            break
+
+        line = re.sub(r'\r?\n?$', '', line)
+
+        oid = None
+        val = None
+        typ = None
+        m = re.search(r'^(.+) = ((.+): )?(.+)?', line)
+        if m :
+            oid = m.group(1)
+            typ = m.group(3)
+            val = m.group(4)
+        else :
+            continue
+
+        if val is None :
+            val = ""
+
+        m = re.search(r'^"(.+)"$', val)
+        if m :
+            val = m.group(1)
+        str2dict(data, oid, typ, val)
+
+
 def main():
     ret = 0
 
@@ -75,44 +103,7 @@ def main():
     for filepath in args:
         #print('open {0}'.format(filepath))
         fp_in = open(filepath, mode="r", encoding="utf-8")
-        while True:
-            line = fp_in.readline()
-            if not line:
-                break
-            count += 1
-
-            line = re.sub(r'\r?\n?$', '', line)
-
-            oid = None
-            val = None
-            typ = None
-            m = re.search(r'^(.+) = ((.+): )?(.+)?', line)
-            if m :
-                oid = m.group(1)
-                typ = m.group(3)
-                val = m.group(4)
-            else :
-                #print('WARNING: line {0}'.format(count))
-                #print('WARNING: invalid line, {0}'.format(line))
-                continue
-                #sys.exit(1)
-
-            if re.search(r'\[[^\[]+\]$', oid) :
-                #print('array')
-                pass
-            else :
-                #print('scalar')
-                pass
-
-            if val is None :
-                val = ""
-
-            m = re.search(r'^"(.+)"$', val)
-            if m :
-                val = m.group(1)
-            #print("{0}, {1}, {2}".format(oid, typ, val))
-            str2dict(data, oid, typ, val)
-
+        parse(fp_in, data)
         fp_in.close()
 
     

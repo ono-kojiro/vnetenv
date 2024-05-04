@@ -149,7 +149,7 @@ class graph():
     #line += '  layout=sfdp;\n'
     #line += '  layout=fdp;\n'
     #line += '  layout=neato;\n'
-    line += '  layout=twopi;\n'
+    #line += '  layout=twopi;\n'
     line += '  overlap=false;\n'
     
     line += '\n'
