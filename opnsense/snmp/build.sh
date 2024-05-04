@@ -31,8 +31,7 @@ all()
   snmp
   json
   db
-  #analysis
-  dot2
+  dot
   pdf
 }
 
@@ -95,10 +94,10 @@ test()
   sqlite3 ${database} "select * from conn_view;"
 }
 
-dot2()
+dot()
 {
-  #cmd="python3 db2dot.py -o mygraph2.dot -i custom.dot ${database}"
-  cmd="python3 db2dot.py -o mygraph2.dot ${database}"
+  #cmd="python3 db2dot.py -o mygraph.dot -i custom.dot ${database}"
+  cmd="python3 db2dot.py -o mygraph.dot ${database}"
   echo $cmd
   $cmd
 }
@@ -126,26 +125,9 @@ prepare()
   done
 }
 
-dot()
-{
-  ymlfiles=""
-  for addr in $addrs; do
-    ymlfiles="$ymlfiles ${addr}.yml"
-  done
-  
-  cmd="python3 yml2dot.py -o mygraph.dot -i custom.dot $ymlfiles"
-  echo $cmd
-  $cmd
-  #cat mygraph.dot
-}
-
 png()
 {
   cmd="command dot -Tpng -o mygraph.png  mygraph.dot"
-  echo $cmd
-  $cmd
-
-  cmd="command dot -Tpng -o mygraph2.png mygraph2.dot"
   echo $cmd
   $cmd
 }
@@ -155,17 +137,11 @@ svg()
   cmd="command dot -Tsvg -o mygraph.svg  mygraph.dot"
   echo $cmd
   $cmd
-  cmd="command dot -Tsvg -o mygraph2.svg mygraph2.dot"
-  echo $cmd
-  $cmd
 }
 
 pdf()
 {
   cmd="command dot -Tpdf -o mygraph.pdf  mygraph.dot"
-  echo $cmd
-  $cmd
-  cmd="command dot -Tpdf -o mygraph2.pdf mygraph2.dot"
   echo $cmd
   $cmd
 }
