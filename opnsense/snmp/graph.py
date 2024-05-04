@@ -120,29 +120,7 @@ class graph():
     for sg in self.subgraphs:
         sg.print(fp, indent + 2)
 
-    for sg in self.subgraphs:
-        nodes = sg.get_node_all()
-        for nd in nodes :
-            names = nd.edges
-            for name in names :
-                if re.search(r'\d+(\.\d+){3}', nd.name) :
-                    val = '"' + nd.name + '"'
-                else :
-                    val = nd.name
-
-                if re.search(':vtnet', name) and re.search(':vtnet', val) :
-                    src = val
-                    dst = name
-                else :
-                    src = name
-                    dst = val
-    
-                minlen = 2
-                fp.write('{0}  {1} -> {2}'.format(idt, src, dst))
-                fp.write(' [minlen={0}];\n'.format(minlen))
-
-    fp.write('{0}\n'.format(idt))
-
+    fp.write('{0} /* draw edges using database */\n'.format(idt))
     if conn:
         fp.write('\n')
         edges   = self.get_edges(conn)
