@@ -137,6 +137,27 @@ def get_hosts(conn, segment):
 
     return items
 
+def get_conn_count(conn) :
+    table = 'conn_view'
+
+    c = conn.cursor()
+    sql =  'SELECT '
+    sql += '  agent_ip '
+    sql += 'FROM {0} '.format(table)
+    sql += ';'
+
+    rows = c.execute(sql)
+
+    hist = {}
+    for row in rows:
+        agent_ip = row['agent_ip']
+        if not agent_ip in hist :
+            hist[agent_ip] = 0
+
+        hist[agent_ip] += 1
+
+    return hist
+
 def main():
     ret = 0
 
@@ -208,11 +229,11 @@ def main():
 
     for database in args:
         conn = sqlite3.connect(database)
+        conn.row_factory = sqlite3.Row
         
         sysnames = get_sysnames(conn)
         segments = get_segments(conn)
-        #pprint(sysnames)
-        #pprint(segments)
+        conn_counts = get_conn_count(conn)
 
         for segment in segments:
             mysubgraph = subgraph(segment)
@@ -238,6 +259,9 @@ def main():
                     'ip'  : ip,
                 }
                 ports.append(port)
+            
+            ports = sorted(ports, key=lambda x: conn_counts[x['ip']])
+
             myagent.set_ports(ports)
             mygraph.add_nodes(myagent)
 
