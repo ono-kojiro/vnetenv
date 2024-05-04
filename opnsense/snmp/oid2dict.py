@@ -13,6 +13,9 @@ def usage():
     print("Usage : {0}".format(sys.argv[0]))
 
 def str2dict(data, oid, typ, val) :
+    # ex. RFC1213-MIB::atIfIndex[2][1.192.168.1.254]
+    #
+    # tokens is ['RFC1213-MIB', 'atIfIndex', '2', '1.192.168.1.254', '']
     tokens = re.split(r'::|\]\[|\[|\]', oid)
 
     for token in tokens :
@@ -20,13 +23,18 @@ def str2dict(data, oid, typ, val) :
            continue
 
         if not token in data:
-            #token = re.sub(r'^"', '', token)
-            #token = re.sub(r'"$', '', token)
+            # remove double quotes
             m = re.search(r'^"(.*)"$', token)
             if m :
                 token = m.group(1)
+
+            # create sub tree
             data[token] = {}
+
+        # update the pointer
         data = data[token]
+
+    # store the value
     data['typ'] = typ
     data['val'] = val
 
@@ -36,8 +44,16 @@ def parse(fp, data):
         if not line:
             break
 
+        # remove line code
         line = re.sub(r'\r?\n?$', '', line)
 
+        #
+        # ex. 'RFC1213-MIB::atIfIndex[2][1.192.168.1.254] = INTEGER: 2'
+        #
+        #   oid: RFC1213-MIB::atIfIndex[2][1.192.168.1.254]
+        #   typ: INTEGER
+        #   val: 2
+        #
         oid = None
         val = None
         typ = None
@@ -52,9 +68,12 @@ def parse(fp, data):
         if val is None :
             val = ""
 
+        # remove double quotes of val
         m = re.search(r'^"(.+)"$', val)
         if m :
             val = m.group(1)
+
+        # store
         str2dict(data, oid, typ, val)
 
 
@@ -101,12 +120,10 @@ def main():
 
     count = 0
     for filepath in args:
-        #print('open {0}'.format(filepath))
         fp_in = open(filepath, mode="r", encoding="utf-8")
         parse(fp_in, data)
         fp_in.close()
 
-    
     #yaml.dump(data,
     #    fp,
     #    allow_unicode=True,
