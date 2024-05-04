@@ -22,7 +22,7 @@ class subgraph():
       is_cluster = "False"
 
     fp.write('{0}  cluster={1};\n'.format(idt, is_cluster))
-    fp.write('{0}  rank = same;\n'.format(idt))
+    #fp.write('{0}  rank = same;\n'.format(idt))
     for node in self.nodes:
         node.print(fp, indent + 2)
     fp.write('{0}}}\n'.format(idt))

@@ -135,25 +135,29 @@ class graph():
   def print(self, fp, conn, includes_dot):
     indent = self.indent
     idt = ' ' * indent
-    #fp.write('{0}graph {1} {{\n'.format(idt, self.name))
-    fp.write('{0}digraph {1} {{\n'.format(idt, self.name))
-    #fp.write('{0}  graph [overlap=false,outputorder=edgesfirst];\n'.format(idt))
-    #fp.write('{0}  node  [style=filled, fillcolor=white];\n'.format(idt))
-    fp.write('{0}  rankdir="{1}";\n'.format(idt, self.rankdir))
-    #fp.write('{0}  newrank=true;\n'.format(idt))
     
-    fp.write('{0}  splines=curved;\n'.format(idt))
-    #fp.write('{0}  splines=ortho;\n'.format(idt))
+    line = ''
+
+    line += 'digraph {0} {{\n'.format(self.name)
+    line += '  rankdir="{0}";\n'.format(self.rankdir)
+    line += '  outputorder=edgesfirst;\n'
+    #line += '  newrank=true;\n'
     
-    #fp.write('{0}  ranksep=10;\n'.format(idt))
-    #fp.write('{0}  nodesep=10;\n'.format(idt))
+    line += '  splines=curved;\n'
+    #line += '  splines=ortho;\n'
 
-    #fp.write('{0}  layout=sfdp;\n'.format(idt))
-    #fp.write('{0}  layout=fdp;\n'.format(idt))
-    #fp.write('{0}  layout=neato;\n'.format(idt))
-    fp.write('{0}  overlap=false;\n'.format(idt))
-
-    fp.write('{0}\n'.format(idt))
+    #line += '  layout=sfdp;\n'
+    #line += '  layout=fdp;\n'
+    #line += '  layout=neato;\n'
+    line += '  overlap=false;\n'
+    
+    line += '\n'
+    
+    idt = ' ' * indent
+    tokens = re.split(r'\n', line)
+    for token in tokens :
+        fp.write('{0}{1}\n'.format(idt, token))
+    line = ''
 
     for nd in self.nodes :
         nd.print(fp, indent + 2)
