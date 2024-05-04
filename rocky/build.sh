@@ -29,18 +29,13 @@ install()
   fi
 
   cat - << EOF > _tmp.conf
-loader="grub"
+loader="uefi"
 cpu=2
 memory=1024M
 network0_type="virtio-net"
 network0_switch="sw31"
 disk0_type="virtio-blk"
 disk0_name="disk0.img"
-grub_install0="linux /isolinux/vmlinuz"
-grub_install1="initrd /isolinux/initrd.img"
-grub_install2="boot"
-grub_run_partition="msdos1"
-grub_run_dir="/grub2"
 EOF
 
 #grub_install0="linux /isolinux/vmlinuz LANG=ja_JP.UTF-8 KEYTABLE=jp SYSFONT=latarcyrheb-sun16 console=ttyS0"
@@ -50,9 +45,29 @@ EOF
   sudo vm create -t ${template} -s 16g -m 1024m -c 2 ${name}
   sudo vm install ${name} ${iso}
 
-  sleep 3
+  sleep 5
 
   sudo vm console ${name}
+}
+
+start()
+{
+  sudo vm start ${name}
+}
+
+list()
+{
+  sudo vm list
+}
+
+stop()
+{
+  sudo vm stop ${name}
+}
+
+destroy()
+{
+  sudo vm destroy ${name}
 }
 
 hosts()

@@ -1,0 +1,6 @@
+
+### https://www.truenas.com/community/threads/quick-guide-to-install-centos-8-in-bhyve-with-the-serial-console.85512/
+
+delete "quiet" and insert "console=ttyS0,115200n8"
+
+
