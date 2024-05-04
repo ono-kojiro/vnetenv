@@ -1,7 +1,9 @@
+import sys
 from subgraph import subgraph
 from node import node
 
 import re
+from pprint import pprint
 
 class graph():
   def __init__(self, name):
@@ -29,7 +31,7 @@ class graph():
     for row in rows:
         item = {
             'sysname': row[0],
-            'ifname' : row[1],
+            #ifname' : row[1], # not used now
             'agent_ip'     : row[2],
             'ip'     : row[3],
             'mac'    : row[4],
@@ -37,7 +39,7 @@ class graph():
         items.append(item)
     return items
   
-  def get_agents(self, conn):
+  def get_is_agent(self, conn):
     table = 'agent_view'
     c = conn.cursor()
     sql = 'SELECT * FROM {0};'.format(table)
@@ -46,37 +48,76 @@ class graph():
     items = {}
     for row in rows:
         sysname = row[0]
-        ifid    = row[1]
-        ifname  = row[2]
-        mac     = row[3]
         ip      = row[4]
-
-        if not sysname in items:
-            items[sysname] = {}
-        if not ifname in items[sysname]:
-            items[sysname][ifname] = {
-                'ip' : ip,
-                'mac' : mac,
-            }
-    return items
-
-  def get_agent_aliases(self, conn):
-    table = 'agent_view'
-    c = conn.cursor()
-    sql = 'SELECT * FROM {0};'.format(table)
-    rows = c.execute(sql)
-
-    items = {}
-    for row in rows:
-        sysname = row[0]
-        ifid    = row[1]
-        ifname  = row[2]
-        mac     = row[3]
-        ip      = row[4]
-
         sysname = re.sub(r'\.[^.]+', '', sysname)
-        items[ip] = "{0}:\"{1}\"".format(sysname, ip)
+        items[ip] = sysname
     return items
+    
+  def create_connections(self, fp, conn, idt):
+    line = ''
+    line += '  /* draw edges using database */\n'
+    line += '\n'
+
+    edges   = self.get_edges(conn)
+    routers = self.get_defaultrouters(conn)
+    ip2agent = self.get_is_agent(conn)
+
+    records = {}
+
+    for edge in edges :
+        sysname = edge['sysname']
+        agent_ip = edge['agent_ip']
+        ip      = edge['ip']
+
+        sysname = re.sub(r'\.[^.]*', '', sysname)
+
+        if agent_ip == ip :
+            continue
+        
+        src = agent_ip
+        dst = ip
+
+        # change direction
+        if dst in routers:
+            print("default router {0} found".format(dst), file=sys.stderr)
+            tmp = src
+            src = dst
+            dst = tmp
+
+        # remove duplicates
+        if not src in records :
+            records[src] = {}
+        if not dst in records[src]:
+            records[src][dst] = 0
+        records[src][dst] += 1
+        if records[src][dst] >= 2:
+            continue
+
+        # ex. "192.168.10.1" -> opnsense10:"192.168.10.1"
+        if src in ip2agent :
+            src = '{0}:"{1}"'.format(ip2agent[src], src)
+        else :
+            src = '"{0}"'.format(src)
+        
+        if dst in ip2agent :
+            dst = '{0}:"{1}"'.format(ip2agent[dst], dst)
+        else :
+            dst = '"{0}"'.format(dst)
+        
+        minlen = 2
+        if re.search(r'.+\:.+', src) and re.search(r'.+\:.+', dst) :
+            minlen = 4
+        
+        line += '  {0} -> {1} '.format(src, dst)
+        line += '[minlen={0}];\n'.format(minlen)
+
+    line += '\n'
+   
+    indent = 2
+    idt = ' ' * indent
+    tokens = re.split(r'\n', line)
+    for token in tokens :
+        fp.write('{0}{1}\n'.format(idt, token))
 
   def get_defaultrouters(self, conn):
     table = 'defaultrouter_table'
@@ -121,44 +162,7 @@ class graph():
     for sg in self.subgraphs:
         sg.print(fp, indent + 2)
 
-    fp.write('{0} /* draw edges using database */\n'.format(idt))
-    if conn:
-        fp.write('\n')
-        edges   = self.get_edges(conn)
-        agents  = self.get_agents(conn)
-        aliases = self.get_agent_aliases(conn)
-        routers = self.get_defaultrouters(conn)
-
-        for edge in edges :
-            sysname = edge['sysname']
-            ifname  = edge['ifname']
-            ip      = edge['ip']
-
-            agent_ip = agents[sysname][ifname]['ip']
-            sysname = re.sub(r'\.[^.]*', '', sysname)
-
-            if agent_ip == ip :
-                continue
-
-            src = "{0}:\"{1}\"".format(sysname, agent_ip)
-            if ip in aliases:
-                dst = aliases[ip]
-            else :
-                dst = "\"{0}\"".format(ip)
-            
-            if ip  in routers:
-                tmp = src
-                src = dst
-                dst = tmp
-            
-            minlen = 2
-            #print('src: {0}, dst: {1}'.format(src,dst), file=sys.stderr)
-            if re.search(r'.+\:.+', src) and re.search(r'.+\:.+', dst) :
-                minlen = 4
-            fp.write('{0}  {1} -> {2}'.format(idt, src, dst))
-            fp.write('[minlen={0}];\n'.format(minlen))
-        fp.write('\n')
-
+    self.create_connections(fp, conn, idt)
 
     for include_dot in includes_dot :
         fp_in = open(include_dot, mode="r", encoding="utf-8")
