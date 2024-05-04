@@ -216,11 +216,13 @@ def create_conn_view(conn):
     sql += 'SELECT '
     sql += '  mac_table.sysname AS sysname, '
     sql += '  ifname_table.ifname AS ifname, '
+    sql += '  agent_view.ip AS agent_ip, '
     sql += '  mac_table.ip  AS ip, '
     sql += '  mac_table.mac AS mac '
     sql += 'FROM mac_table '
     sql += '  LEFT OUTER JOIN ifmac_table ON mac_table.mac = ifmac_table.mac '
     sql += '  LEFT JOIN ifname_table ON mac_table.sysname = ifname_table.sysname AND mac_table.ifid = ifname_table.ifid '
+    sql += '  LEFT JOIN agent_view ON mac_table.sysname = agent_view.sysname AND mac_table.ifid = agent_view.ifid '
     #sql += 'WHERE ifmac_table.mac IS NULL '
     sql += ';'
 

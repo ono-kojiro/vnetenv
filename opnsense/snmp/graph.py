@@ -30,8 +30,9 @@ class graph():
         item = {
             'sysname': row[0],
             'ifname' : row[1],
-            'ip'     : row[2],
-            'mac'    : row[3],
+            'agent_ip'     : row[2],
+            'ip'     : row[3],
+            'mac'    : row[4],
         }
         items.append(item)
     return items
