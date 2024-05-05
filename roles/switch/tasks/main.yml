@@ -14,7 +14,7 @@
       if_opts="${if_opts} -a ${inet}"
     fi
 
-    vm switch list | grep -e '^{{ item.name }}'
+    vm switch list | grep -e '^{{ item.name }} '
     if [ $? -ne 0 ]; then
       vm switch create -t {{ item.type }} ${if_opts} {{ item.name }}
     fi

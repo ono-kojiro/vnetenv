@@ -1,26 +1,22 @@
 ---
 switches:
-  - name: br0
+  - name: sw1
     type: manual
-    interface: bridge0
+    interface: bridge1
 
-  - name: br40
+  - name: sw10
     type: standard
-    inet: 192.168.40.84/24
+    inet: 192.168.10.84/24
+  
+  - name: sw20
+    type: standard
+    inet: 192.168.20.84/24
 
-  - name: br50
+  - name: sw30
     type: standard
-    inet: 192.168.50.84/24
-
-  - name: br60
+    inet: 192.168.30.84/24
+  
+  - name: sw31
     type: standard
-    inet: 192.168.60.84/24
-
-  - name: br70
-    type: standard
-    inet: 192.168.70.84/24
-
-  - name: br80
-    type: standard
-    inet: 192.168.80.84/24
+    inet: 192.168.31.84/24
 
