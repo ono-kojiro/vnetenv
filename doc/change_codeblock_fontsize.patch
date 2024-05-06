@@ -1,0 +1,21 @@
+*** conf-orig.py	2024-05-05 16:14:19.526031100 +0900
+--- conf.py	2024-05-05 16:15:27.875035261 +0900
+***************
+*** 3,8 ****
+--- 3,18 ----
+  # For the full list of built-in configuration values, see the documentation:
+  # https://www.sphinx-doc.org/en/master/usage/configuration.html
+  
++ from sphinx.highlighting import PygmentsBridge
++ from pygments.formatters.latex import LatexFormatter
++ 
++ class CustomLatexFormatter(LatexFormatter):
++     def __init__(self, **options):
++         super(CustomLatexFormatter, self).__init__(**options)
++         self.verboptions = r"formatcom=\scriptsize"
++ 
++ PygmentsBridge.latex_formatter = CustomLatexFormatter
++ 
+  # -- Project information -----------------------------------------------------
+  # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+  
