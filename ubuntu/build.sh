@@ -3,9 +3,13 @@
 top_dir="$(cd "$(dirname "$0")" > /dev/null 2>&1 && pwd)"
 cd $top_dir
 
-template="ubuntu"
-name="ubuntu"
+#iso="ubuntu-24.04-live-server-amd64.iso"
+#name="noble"
+
 iso="ubuntu-22.04.4-live-server-amd64.iso"
+name="jammy"
+
+template="ubuntu"
 
 segs="40 50 60"
 
@@ -35,15 +39,14 @@ loader="grub"
 cpu=2
 memory=1024M
 network0_type="virtio-net"
-network0_switch="br0"
+network0_switch="sw1"
 disk0_type="virtio-blk"
 disk0_name="disk0.img"
-grub_run_partition="2"
 EOF
 
 sudo cp -f _tmp.conf /vm/.templates/${template}.conf
 sudo vm create -t ${template} -s 16g -m 1024m -c 2 ${name}
-sudo vm install ${name} ubuntu-22.04.4-live-server-amd64.iso
+sudo vm install ${name} ${iso}
 
   sleep 3
 
