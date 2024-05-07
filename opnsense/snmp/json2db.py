@@ -383,9 +383,11 @@ def search_ifmac(data):
 
     return items
 
-def search_mac(conn, data, sysname, ifmacs):
+def search_ip(data):
     keyword = 'ipNetToPhysicalPhysAddress'
     expr = parse('$..' + keyword)
+
+    ips = {}
 
     for m in expr.find(data):
         tree = m.value
@@ -395,10 +397,13 @@ def search_mac(conn, data, sysname, ifmacs):
 
             for ip in tree[ifid]['ipv4']:
                 mac = tree[ifid]['ipv4'][ip]['val']
-                #if mac in ifmacs:
-                #    continue
+                ips[ip] = {
+                    'ifid' : ifid,
+                    'mac'  : mac,
+                }
 
-                insert_ip(conn, sysname, ifid, ip, mac)
+                #insert_ip(conn, sysname, ifid, ip, mac)
+    return ips
 
 def search_sysname(data):
     keyword = "['sysName.0']"
@@ -485,7 +490,12 @@ def main():
             mac = ifmacs[ifid]
             insert_ifmac(conn, sysname, ifid, mac)
             
-        search_mac(conn, data, sysname, ifmacs)
+        ips = search_ip(data)
+        for ip in ips:
+            ifid = ips[ip]['ifid']
+            mac  = ips[ip]['mac']
+            insert_ip(conn, sysname, ifid, ip, mac)
+
         search_netmask(conn, data)
         search_defaultrouter(conn, data, sysname)
 
