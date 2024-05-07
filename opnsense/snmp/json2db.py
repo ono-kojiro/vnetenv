@@ -329,7 +329,7 @@ def insert_sysname(conn, name):
 
     c.execute(sql, item)
 
-def search_netmask(conn, data):
+def search_netmask(data):
     keyword = 'ipCidrRouteInfo'
     expr = parse('$..' + keyword)
 
@@ -340,21 +340,24 @@ def search_netmask(conn, data):
         for addr in tree:
             for mask in tree[addr]:
                 if mask != '0.0.0.0' :
-                    insert_netmask(conn, addr, mask)
+                    items[addr] = mask
+                    #insert_netmask(conn, addr, mask)
+    return items
 
-def search_defaultrouter(conn, data, sysname):
+def search_defaultrouter(data):
     keyword = 'ipDefaultRouterLifetime'
     expr = parse('$..' + keyword)
 
-    items = {}
+    items = []
 
     for m in expr.find(data):
         tree = m.value
         if not 'ipv4' in tree:
             continue
-
         for addr in tree['ipv4']:
-            insert_defaultrouter(conn, sysname, addr)
+            items.append(addr)
+    return items
+
 
 def insert_netmask(conn, addr, netmask):
     table = 'netmask_table'
@@ -479,6 +482,13 @@ def main():
         sysname = sysnames[0]
         insert_sysname(conn, sysname)
         
+        routers = search_defaultrouter(data)
+        if len(routers) != 1 :
+            print('ERROR: no defaultrouter in {0}'.format(filepath))
+            sys.exit(1)
+        router = routers[0]
+        insert_defaultrouter(conn, sysname, router)
+        
         # ifnames[ifname] => ifid
         ifnames = search_ifname(data)
         for ifname in ifnames:
@@ -496,8 +506,10 @@ def main():
             mac  = ips[ip]['mac']
             insert_ip(conn, sysname, ifid, ip, mac)
 
-        search_netmask(conn, data)
-        search_defaultrouter(conn, data, sysname)
+        masks = search_netmask(data)
+        for addr in masks:
+            insert_netmask(conn, addr, masks[addr])
+            
 
     create_view(conn)
     conn.commit()
