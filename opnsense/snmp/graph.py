@@ -30,11 +30,11 @@ class graph():
     items = []
     for row in rows:
         item = {
-            'sysname': row[0],
-            #ifname' : row[1], # not used now
-            'agent_ip'     : row[2],
-            'ip'     : row[3],
-            'mac'    : row[4],
+            'sysname': row['sysname'],
+            #ifname' : row['ifname'], # not used now
+            'agent_ip'     : row['agent_ip'],
+            'ip'     : row['ip'],
+            'mac'    : row['mac'],
         }
         items.append(item)
     return items
