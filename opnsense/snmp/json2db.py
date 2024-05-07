@@ -415,7 +415,7 @@ def search_sysname(data):
 
     return items
 
-def search_ifname(conn, data):
+def search_ifname(data):
     keyword = 'ifName'
     expr = parse('$..' + keyword)
 
@@ -477,7 +477,7 @@ def main():
         insert_sysname(conn, sysname)
         
         # ifnames[ifname] => ifid
-        ifnames = search_ifname(conn, data)
+        ifnames = search_ifname(data)
         for ifname in ifnames:
             ifid = ifnames[ifname]
             insert_ifname(conn, sysname, ifname, ifid)
