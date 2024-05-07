@@ -67,11 +67,11 @@ def get_agents(conn):
     agents = {}
 
     for row in rows:
-        sysname = row[0]
-        ifid    = row[1]
-        ifname  = row[2]
-        mac     = row[3]
-        ip      = row[4]
+        sysname = row['sysname']
+        ifid    = row['ifid']
+        ifname  = row['ifname']
+        mac     = row['mac']
+        ip      = row['ip']
 
         sysname = re.sub(r'\.[^.]*', '', sysname)
         if not sysname in agents:

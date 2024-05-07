@@ -47,8 +47,8 @@ class graph():
 
     items = {}
     for row in rows:
-        sysname = row[0]
-        ip      = row[4]
+        sysname = row['sysname']
+        ip      = row['ip']
         sysname = re.sub(r'\.[^.]+', '', sysname)
         items[ip] = sysname
     return items
