@@ -369,7 +369,7 @@ def insert_netmask(conn, addr, netmask):
 
     c.execute(sql, item)
 
-def search_ifmac(conn, data, sysname):
+def search_ifmac(data):
     keyword = 'ifPhysAddress'
     expr = parse('$..' + keyword)
 
@@ -380,8 +380,7 @@ def search_ifmac(conn, data, sysname):
         for ifid in tree:
             mac = tree[ifid]['val']
             if mac != '' :
-                insert_ifmac(conn, sysname, ifid, mac)
-                items[mac] = 1
+                items[ifid] = mac
 
     return items
 
@@ -482,7 +481,11 @@ def main():
             ifid = ifnames[ifname]
             insert_ifname(conn, sysname, ifname, ifid)
 
-        ifmacs = search_ifmac(conn, data, sysname)
+        ifmacs = search_ifmac(data)
+        for ifid in ifmacs :
+            mac = ifmacs[ifid]
+            insert_ifmac(conn, sysname, ifid, mac)
+            
         search_mac(conn, data, sysname, ifmacs)
         search_netmask(conn, data)
         search_defaultrouter(conn, data, sysname)
