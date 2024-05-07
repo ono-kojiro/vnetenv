@@ -110,7 +110,6 @@ def create_netmask_table(conn):
 
     sql = 'CREATE TABLE {0} ('.format(table)
     sql += 'id INTEGER PRIMARY KEY, '
-    sql += 'sysname TEXT, '
     sql += 'addr TEXT, '
     sql += 'netmask TEXT '
     sql += ');'
@@ -331,7 +330,7 @@ def insert_sysname(conn, name):
 
     c.execute(sql, item)
 
-def search_netmask(conn, data, sysname):
+def search_netmask(conn, data):
     keyword = 'ipCidrRouteInfo'
     expr = parse('$..' + keyword)
 
@@ -342,7 +341,7 @@ def search_netmask(conn, data, sysname):
         for addr in tree:
             for mask in tree[addr]:
                 if mask != '0.0.0.0' :
-                    insert_netmask(conn, sysname, addr, mask)
+                    insert_netmask(conn, addr, mask)
 
 def search_defaultrouter(conn, data, sysname):
     keyword = 'ipDefaultRouterLifetime'
@@ -358,13 +357,12 @@ def search_defaultrouter(conn, data, sysname):
         for addr in tree['ipv4']:
             insert_defaultrouter(conn, sysname, addr)
 
-def insert_netmask(conn, sysname, addr, netmask):
+def insert_netmask(conn, addr, netmask):
     table = 'netmask_table'
 
     c = conn.cursor()
-    sql = 'INSERT INTO {0} VALUES ( NULL, ?, ?, ? );'.format(table)
+    sql = 'INSERT INTO {0} VALUES ( NULL, ?, ? );'.format(table)
     item = [
-        sysname,
         addr,
         netmask
     ]
@@ -482,7 +480,7 @@ def main():
         ifmacs = search_ifmac(conn, data, sysname)
         search_mac(conn, data, sysname, ifmacs)
         search_ifname(conn, data, sysname)
-        search_netmask(conn, data, sysname)
+        search_netmask(conn, data)
         search_defaultrouter(conn, data, sysname)
 
     #yaml.dump(records,
