@@ -1,0 +1,5 @@
+
+https://sig9.org/blog/2022/03/23/
+
+add 'boot=casper quiet console=ttyS0,115200n8'
+

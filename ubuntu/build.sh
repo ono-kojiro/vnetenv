@@ -35,22 +35,22 @@ install()
   fi
 
   cat - << EOF > _tmp.conf
-loader="grub"
-cpu=2
-memory=1024M
+loader="uefi"
+cpu=4
+memory=4096
 network0_type="virtio-net"
-network0_switch="sw1"
+network0_switch="sw10"
 disk0_type="virtio-blk"
 disk0_name="disk0.img"
 EOF
 
 sudo cp -f _tmp.conf /vm/.templates/${template}.conf
-sudo vm create -t ${template} -s 16g -m 1024m -c 2 ${name}
+sudo vm create -t ${template} -s 128g -m 2048m -c 4 ${name}
 sudo vm install ${name} ${iso}
 
-  sleep 3
+  #sleep 3
 
-  sudo vm console ${name}
+  #sudo vm console ${name}
 }
 
 hosts()
