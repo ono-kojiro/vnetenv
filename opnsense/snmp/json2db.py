@@ -32,7 +32,7 @@ def read_yaml(filepath):
 def create_table(conn):
     create_sysname_table(conn)
     create_ifmac_table(conn)
-    create_mac_table(conn)
+    create_ip_table(conn)
     create_ifname_table(conn)
     create_netmask_table(conn)
     create_defaultrouter_table(conn)
@@ -54,8 +54,8 @@ def create_ifmac_table(conn):
     c.execute(sql)
 
 
-def create_mac_table(conn):
-    table = 'mac_table'
+def create_ip_table(conn):
+    table = 'ip_table'
 
     c = conn.cursor()
     sql = 'DROP TABLE IF EXISTS {0};'.format(table)
@@ -95,8 +95,8 @@ def create_ifname_table(conn):
     sql = 'CREATE TABLE {0} ('.format(table)
     sql += 'id INTEGER PRIMARY KEY, '
     sql += 'sysname TEXT, '
-    sql += 'ifid INTEGER, '
-    sql += 'ifname TEXT '
+    sql += 'ifname TEXT, '
+    sql += 'ifid INTEGER '
     sql += ');'
 
     c.execute(sql)
@@ -110,7 +110,6 @@ def create_netmask_table(conn):
 
     sql = 'CREATE TABLE {0} ('.format(table)
     sql += 'id INTEGER PRIMARY KEY, '
-    sql += 'sysname TEXT, '
     sql += 'addr TEXT, '
     sql += 'netmask TEXT '
     sql += ');'
@@ -137,6 +136,7 @@ def create_view(conn):
     create_agent_view(conn)
     create_host_view(conn)
     create_conn_view(conn)
+    create_trunk_view(conn)
     create_segment_view(conn)
     create_ifip_view(conn)
 
@@ -152,11 +152,11 @@ def create_agent_view(conn):
     sql += '  ifname_table.sysname AS sysname, '
     sql += '  ifname_table.ifid AS ifid, '
     sql += '  ifname_table.ifname AS ifname, '
-    sql += '  ifmac_table.mac AS mac, '
-    sql += '  mac_table.ip  AS ip '
+    sql += '  ip_table.ip  AS ip, '
+    sql += '  ifmac_table.mac AS mac '
     sql += 'FROM ifname_table '
     sql += 'LEFT JOIN ifmac_table ON ifname_table.sysname = ifmac_table.sysname AND ifname_table.ifid = ifmac_table.ifid '
-    sql += 'LEFT JOIN mac_table ON ifname_table.sysname = mac_table.sysname AND ifname_table.ifid = mac_table.ifid AND ifmac_table.mac = mac_table.mac '
+    sql += 'LEFT JOIN ip_table ON ifname_table.sysname = ip_table.sysname AND ifname_table.ifid = ip_table.ifid AND ifmac_table.mac = ip_table.mac '
     sql += 'WHERE ifmac_table.mac != "" '
     sql += ';'
 
@@ -171,14 +171,14 @@ def create_host_view(conn):
 
     sql = 'CREATE VIEW {0} AS '.format(view)
     sql += 'SELECT '
-    sql += '  mac_table.sysname AS sysname, '
-    sql += '  mac_table.ifid AS ifid, '
-    sql += '  mac_table.ip  AS ip, '
-    sql += '  mac_table.mac AS mac, '
+    sql += '  ip_table.sysname AS sysname, '
+    sql += '  ip_table.ifid AS ifid, '
+    sql += '  ip_table.ip  AS ip, '
+    sql += '  ip_table.mac AS mac, '
     sql += '  ifmac_table.mac AS mac2 '
-    sql += 'FROM mac_table '
+    sql += 'FROM ip_table '
     sql += 'LEFT OUTER JOIN ifmac_table ON '
-    sql += '  mac_table.mac     = ifmac_table.mac '
+    sql += '  ip_table.mac     = ifmac_table.mac '
     sql += 'WHERE ifmac_table.mac IS NULL '
     sql += ';'
 
@@ -196,11 +196,11 @@ def create_ifip_view(conn):
     sql += '  ifmac_table.sysname AS sysname, '
     sql += '  ifmac_table.ifid AS ifid, '
     sql += '  ifname_table.ifname AS ifname, '
-    sql += '  mac_table.ip AS ip, '
+    sql += '  ip_table.ip AS ip, '
     sql += '  ifmac_table.mac AS mac '
     sql += 'FROM ifmac_table '
     sql += '  LEFT JOIN ifname_table ON ifmac_table.sysname = ifname_table.sysname AND ifmac_table.ifid = ifname_table.ifid '
-    sql += '  LEFT JOIN mac_table ON ifmac_table.sysname = mac_table.sysname AND ifmac_table.ifid = mac_table.ifid AND ifmac_table.mac = mac_table.mac '
+    sql += '  LEFT JOIN ip_table ON ifmac_table.sysname = ip_table.sysname AND ifmac_table.ifid = ip_table.ifid AND ifmac_table.mac = ip_table.mac '
     sql += ';'
 
     c.execute(sql)
@@ -214,16 +214,38 @@ def create_conn_view(conn):
 
     sql = 'CREATE VIEW {0} AS '.format(view)
     sql += 'SELECT '
-    sql += '  mac_table.sysname AS sysname, '
+    sql += '  ip_table.sysname AS sysname, '
     sql += '  ifname_table.ifname AS ifname, '
     sql += '  agent_view.ip AS agent_ip, '
-    sql += '  mac_table.ip  AS ip, '
-    sql += '  mac_table.mac AS mac '
-    sql += 'FROM mac_table '
-    sql += '  LEFT OUTER JOIN ifmac_table ON mac_table.mac = ifmac_table.mac '
-    sql += '  LEFT JOIN ifname_table ON mac_table.sysname = ifname_table.sysname AND mac_table.ifid = ifname_table.ifid '
-    sql += '  LEFT JOIN agent_view ON mac_table.sysname = agent_view.sysname AND mac_table.ifid = agent_view.ifid '
-    #sql += 'WHERE ifmac_table.mac IS NULL '
+    sql += '  ip_table.ip  AS ip, '
+    sql += '  ip_table.mac AS mac '
+    sql += 'FROM ip_table '
+    sql += '  LEFT OUTER JOIN ifmac_table ON ip_table.mac = ifmac_table.mac '
+    sql += '  LEFT JOIN ifname_table ON ip_table.sysname = ifname_table.sysname AND ip_table.ifid = ifname_table.ifid '
+    sql += '  LEFT JOIN agent_view ON ip_table.sysname = agent_view.sysname AND ip_table.ifid = agent_view.ifid '
+    sql += ';'
+
+    c.execute(sql)
+
+def create_trunk_view(conn):
+    view = 'trunk_view'
+    
+    c = conn.cursor()
+    sql = 'DROP VIEW IF EXISTS {0};'.format(view)
+    c.execute(sql)
+
+    sql = 'CREATE VIEW {0} AS '.format(view)
+    sql += 'SELECT '
+    sql += '  ip_table.sysname AS sysname, '
+    sql += '  ifname_table.ifname AS ifname, '
+    sql += '  agent_view.ip AS agent_ip, '
+    sql += '  ip_table.ip  AS ip, '
+    sql += '  ip_table.mac AS mac '
+    sql += 'FROM ip_table '
+    sql += '  LEFT OUTER JOIN ifmac_table ON ip_table.mac = ifmac_table.mac '
+    sql += '  LEFT JOIN ifname_table ON ip_table.sysname = ifname_table.sysname AND ip_table.ifid = ifname_table.ifid '
+    sql += '  LEFT JOIN agent_view ON ip_table.sysname = agent_view.sysname AND ip_table.ifid = agent_view.ifid '
+    sql += 'WHERE ifmac_table.mac IS NOT NULL '
     sql += ';'
 
     c.execute(sql)
@@ -243,15 +265,15 @@ def create_segment_view(conn):
 
     c.execute(sql)
 
-def insert_ifname(conn, sysname, ifid, ifname):
+def insert_ifname(conn, sysname, ifname, ifid):
     table = 'ifname_table'
 
     c = conn.cursor()
     sql = 'INSERT INTO {0} VALUES ( NULL, ?, ?, ?);'.format(table)
     item = [
         sysname,
-        ifid,
         ifname,
+        ifid,
     ]
 
     c.execute(sql, item)
@@ -282,8 +304,8 @@ def insert_ifmac(conn, sysname, ifid, mac):
 
     c.execute(sql, item)
 
-def insert_mac(conn, sysname, ifid, ip, mac):
-    table = 'mac_table'
+def insert_ip(conn, sysname, ifid, ip, mac):
+    table = 'ip_table'
 
     c = conn.cursor()
     sql = 'INSERT INTO {0} VALUES ( NULL, ?, ?, ?, ? );'.format(table)
@@ -307,7 +329,7 @@ def insert_sysname(conn, name):
 
     c.execute(sql, item)
 
-def search_netmask(conn, data, sysname):
+def search_netmask(data):
     keyword = 'ipCidrRouteInfo'
     expr = parse('$..' + keyword)
 
@@ -318,36 +340,38 @@ def search_netmask(conn, data, sysname):
         for addr in tree:
             for mask in tree[addr]:
                 if mask != '0.0.0.0' :
-                    insert_netmask(conn, sysname, addr, mask)
+                    items[addr] = mask
+                    #insert_netmask(conn, addr, mask)
+    return items
 
-def search_defaultrouter(conn, data, sysname):
+def search_defaultrouter(data):
     keyword = 'ipDefaultRouterLifetime'
     expr = parse('$..' + keyword)
 
-    items = {}
+    items = []
 
     for m in expr.find(data):
         tree = m.value
         if not 'ipv4' in tree:
             continue
-
         for addr in tree['ipv4']:
-            insert_defaultrouter(conn, sysname, addr)
+            items.append(addr)
+    return items
 
-def insert_netmask(conn, sysname, addr, netmask):
+
+def insert_netmask(conn, addr, netmask):
     table = 'netmask_table'
 
     c = conn.cursor()
-    sql = 'INSERT INTO {0} VALUES ( NULL, ?, ?, ? );'.format(table)
+    sql = 'INSERT INTO {0} VALUES ( NULL, ?, ? );'.format(table)
     item = [
-        sysname,
         addr,
         netmask
     ]
 
     c.execute(sql, item)
 
-def search_ifmac(conn, data, sysname):
+def search_ifmac(data):
     keyword = 'ifPhysAddress'
     expr = parse('$..' + keyword)
 
@@ -358,14 +382,15 @@ def search_ifmac(conn, data, sysname):
         for ifid in tree:
             mac = tree[ifid]['val']
             if mac != '' :
-                insert_ifmac(conn, sysname, ifid, mac)
-                items[mac] = 1
+                items[ifid] = mac
 
     return items
 
-def search_mac(conn, data, sysname, ifmacs):
+def search_ip(data):
     keyword = 'ipNetToPhysicalPhysAddress'
     expr = parse('$..' + keyword)
+
+    ips = {}
 
     for m in expr.find(data):
         tree = m.value
@@ -375,34 +400,39 @@ def search_mac(conn, data, sysname, ifmacs):
 
             for ip in tree[ifid]['ipv4']:
                 mac = tree[ifid]['ipv4'][ip]['val']
-                #if mac in ifmacs:
-                #    continue
+                ips[ip] = {
+                    'ifid' : ifid,
+                    'mac'  : mac,
+                }
 
-                insert_mac(conn, sysname, ifid, ip, mac)
+                #insert_ip(conn, sysname, ifid, ip, mac)
+    return ips
 
-def search_sysname(conn, data):
+def search_sysname(data):
     keyword = "['sysName.0']"
     expr = parse('$..' + keyword)
 
-    sysname = None
-
+    items = []
+    
     for m in expr.find(data):
         tree = m.value
-
         sysname = tree['val']
-        insert_sysname(conn, sysname)
+        items.append(sysname)
 
-    return sysname
+    return items
 
-def search_ifname(conn, data, sysname):
+def search_ifname(data):
     keyword = 'ifName'
     expr = parse('$..' + keyword)
+
+    items = {}
 
     for m in expr.find(data):
         tree = m.value
         for ifid in tree:
             ifname = tree[ifid]['val']
-            insert_ifname(conn, sysname, ifid, ifname)
+            items[ifname] = ifid
+    return items
 
 def main():
     ret = 0
@@ -442,41 +472,44 @@ def main():
     conn = sqlite3.connect(output)
     create_table(conn)
  
-    records = {}
-
-    keywords = [
-#        "['sysName.0']",
-#        "['ifNumber.0']",
-#        'ifName',
-#        'ifPhysAddress',
-        'ipNetToPhysicalPhysAddress',
-    ]
-
     for filepath in args:
         data = read_json(filepath)
-        sysname = search_sysname(conn, data)
-        ifmacs = search_ifmac(conn, data, sysname)
-        search_mac(conn, data, sysname, ifmacs)
-        search_ifname(conn, data, sysname)
-        search_netmask(conn, data, sysname)
-        search_defaultrouter(conn, data, sysname)
+        sysnames = search_sysname(data)
+        if len(sysnames) != 1 :
+            print('ERROR: no sysname in {0}'.format(filepath))
+            sys.exit(1)
 
-    #yaml.dump(records,
-    #    fp,
-    #    allow_unicode=True,
-    #    default_flow_style=False,
-    #    sort_keys=True
-    #)
+        sysname = sysnames[0]
+        insert_sysname(conn, sysname)
+        
+        routers = search_defaultrouter(data)
+        if len(routers) != 1 :
+            print('ERROR: no defaultrouter in {0}'.format(filepath))
+            sys.exit(1)
+        router = routers[0]
+        insert_defaultrouter(conn, sysname, router)
+        
+        # ifnames[ifname] => ifid
+        ifnames = search_ifname(data)
+        for ifname in ifnames:
+            ifid = ifnames[ifname]
+            insert_ifname(conn, sysname, ifname, ifid)
 
-    #fp.write(
-    #    json.dumps(
-    #        records,
-    #        indent=4,
-    #        ensure_ascii=False,
-    #        sort_keys=True,
-    #    )
-    #)
-    #fp.write('\n')
+        ifmacs = search_ifmac(data)
+        for ifid in ifmacs :
+            mac = ifmacs[ifid]
+            insert_ifmac(conn, sysname, ifid, mac)
+            
+        ips = search_ip(data)
+        for ip in ips:
+            ifid = ips[ip]['ifid']
+            mac  = ips[ip]['mac']
+            insert_ip(conn, sysname, ifid, ip, mac)
+
+        masks = search_netmask(data)
+        for addr in masks:
+            insert_netmask(conn, addr, masks[addr])
+            
 
     create_view(conn)
     conn.commit()

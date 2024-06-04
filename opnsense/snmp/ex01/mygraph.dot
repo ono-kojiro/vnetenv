@@ -1,0 +1,315 @@
+digraph mygraph {
+  rankdir="TB";
+  outputorder=edgesfirst;
+  splines=curved;
+  overlap=false;
+
+
+  "opnsense10" [
+    shape=record
+    label="{
+      {opnsense10}|
+      {SNMP Agent}|
+      {
+        <192.168.1.10>vtnet1&#92;n192.168.1.10
+        |<192.168.10.1>vtnet0&#92;n192.168.10.1
+      }
+    }"
+  ];
+  
+  "opnsense20" [
+    shape=record
+    label="{
+      {opnsense20}|
+      {SNMP Agent}|
+      {
+        <192.168.10.20>vtnet1&#92;n192.168.10.20
+        |<192.168.20.1>vtnet0&#92;n192.168.20.1
+      }
+    }"
+  ];
+  
+  "opnsense30" [
+    shape=record
+    label="{
+      {opnsense30}|
+      {SNMP Agent}|
+      {
+        <192.168.20.30>vtnet1&#92;n192.168.20.30
+        |<192.168.30.1>vtnet0&#92;n192.168.30.1
+      }
+    }"
+  ];
+  
+  "opnsense31" [
+    shape=record
+    label="{
+      {opnsense31}|
+      {SNMP Agent}|
+      {
+        <192.168.31.1>vtnet0&#92;n192.168.31.1
+        |<192.168.20.31>vtnet1&#92;n192.168.20.31
+      }
+    }"
+  ];
+  
+
+  subgraph "192.168.1.0" {
+    label="192.168.1.0"
+    
+    cluster=True;
+    "192.168.1.1" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.1.1</td></tr>
+          <tr><td>mac: 58:9c:fc:10:b2:e</td></tr>
+        </table>
+      >
+    ]
+    
+    
+  }
+  
+  subgraph "192.168.10.0" {
+    label="192.168.10.0"
+    
+    cluster=True;
+    "192.168.10.100" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.10.100</td></tr>
+          <tr><td>mac: 58:9c:fc:4:db:e3</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.10.103" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.10.103</td></tr>
+          <tr><td>mac: 58:9c:fc:a:8:47</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.10.104" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.10.104</td></tr>
+          <tr><td>mac: 58:9c:fc:3:d9:82</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.10.105" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.10.105</td></tr>
+          <tr><td>mac: 58:9c:fc:1:f9:86</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.10.108" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.10.108</td></tr>
+          <tr><td>mac: 58:9c:fc:e:f6:ad</td></tr>
+        </table>
+      >
+    ]
+    
+    
+  }
+  
+  subgraph "192.168.20.0" {
+    label="192.168.20.0"
+    
+    cluster=True;
+    "192.168.20.100" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.20.100</td></tr>
+          <tr><td>mac: 58:9c:fc:9:e9:33</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.20.101" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.20.101</td></tr>
+          <tr><td>mac: 58:9c:fc:a:b1:2c</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.20.102" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.20.102</td></tr>
+          <tr><td>mac: 58:9c:fc:0:23:17</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.20.103" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.20.103</td></tr>
+          <tr><td>mac: 58:9c:fc:4:a:3d</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.20.105" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.20.105</td></tr>
+          <tr><td>mac: 58:9c:fc:0:90:61</td></tr>
+        </table>
+      >
+    ]
+    
+    
+  }
+  
+  subgraph "192.168.30.0" {
+    label="192.168.30.0"
+    
+    cluster=True;
+    "192.168.30.100" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.30.100</td></tr>
+          <tr><td>mac: 58:9c:fc:a:a6:9</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.30.101" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.30.101</td></tr>
+          <tr><td>mac: 58:9c:fc:7:e7:17</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.30.102" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.30.102</td></tr>
+          <tr><td>mac: 58:9c:fc:7:26:71</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.30.103" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.30.103</td></tr>
+          <tr><td>mac: 58:9c:fc:6:47:a1</td></tr>
+        </table>
+      >
+    ]
+    
+    
+    "192.168.30.105" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.30.105</td></tr>
+          <tr><td>mac: 58:9c:fc:1:e:3b</td></tr>
+        </table>
+      >
+    ]
+    
+    
+  }
+  
+  subgraph "192.168.31.0" {
+    label="192.168.31.0"
+    
+    cluster=True;
+    "192.168.31.108" [
+      shape=box,
+      label=<
+        <table cellspacing="0" border="0" cellborder="0">
+          <tr><td fixedsize="true" width="20" height="20"><img src="icons/doc_jpg/pc.png" /></td></tr>
+          <tr><td>ip:  192.168.31.108</td></tr>
+          <tr><td>mac: 58:9c:fc:1:df:77</td></tr>
+        </table>
+      >
+    ]
+    
+    
+  }
+  
+    /* draw edges using database */
+  
+    opnsense10:"192.168.10.1" -> "192.168.10.100" [minlen=2];
+    opnsense10:"192.168.10.1" -> "192.168.10.103" [minlen=2];
+    opnsense10:"192.168.10.1" -> "192.168.10.104" [minlen=2];
+    opnsense10:"192.168.10.1" -> "192.168.10.105" [minlen=2];
+    opnsense10:"192.168.10.1" -> "192.168.10.108" [minlen=2];
+    opnsense10:"192.168.10.1" -> opnsense20:"192.168.10.20" [minlen=4];
+    "192.168.1.1" -> opnsense10:"192.168.1.10" [minlen=2];
+    opnsense20:"192.168.20.1" -> "192.168.20.100" [minlen=2];
+    opnsense20:"192.168.20.1" -> "192.168.20.101" [minlen=2];
+    opnsense20:"192.168.20.1" -> "192.168.20.102" [minlen=2];
+    opnsense20:"192.168.20.1" -> "192.168.20.103" [minlen=2];
+    opnsense20:"192.168.20.1" -> "192.168.20.105" [minlen=2];
+    opnsense20:"192.168.20.1" -> opnsense30:"192.168.20.30" [minlen=4];
+    opnsense20:"192.168.20.1" -> opnsense31:"192.168.20.31" [minlen=4];
+    opnsense30:"192.168.30.1" -> "192.168.30.100" [minlen=2];
+    opnsense30:"192.168.30.1" -> "192.168.30.101" [minlen=2];
+    opnsense30:"192.168.30.1" -> "192.168.30.102" [minlen=2];
+    opnsense30:"192.168.30.1" -> "192.168.30.103" [minlen=2];
+    opnsense30:"192.168.30.1" -> "192.168.30.105" [minlen=2];
+    opnsense31:"192.168.31.1" -> "192.168.31.108" [minlen=2];
+  
+  
+}
