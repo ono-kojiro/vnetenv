@@ -80,8 +80,23 @@ cd $top_dir
 #       <listen/>
 #     </general>
 #   </netsnmp>
+#
+# DISABLE NAT
+# # vi /conf/config.xml
+# ...
+#   </snmpd>
+#   <nat>
+#     <outbound>
+#-      <mode>disabled</mode>
+#-      <rule/>
+#+      <mode>automatic</mode>
+#     </outbound>
+#   </nat>
+#   <filter>
+#
+#
 
-template="opnsense"
+template="firewall"
 name="opnsense"
 segments="40 50 60"
 
@@ -89,7 +104,7 @@ iso="OPNsense-24.1-serial-amd64.img"
   
 addrs="192.168.40.1 192.168.50.1 192.168.60.1"
 
-install()
+create()
 {
   if [ ! -e "/vm/.iso/$iso" ]; then
     sudo vm iso $HOME/Downloads/$iso
@@ -100,17 +115,31 @@ loader="bhyveload"
 cpu=2
 memory=2048M
 network0_type="virtio-net"
-network0_switch="br0"
+network0_switch="sw0"
+network1_type="virtio-net"
+network1_switch="sw1"
+network2_type="virtio-net"
+network2_switch="sw2"
+network3_type="virtio-net"
+network3_switch="sw3"
+network4_type="virtio-net"
+network4_switch="sw4"
 disk0_type="virtio-blk"
 disk0_name="disk0.img"
 EOF
 
   sudo cp -f _tmp.conf /vm/.templates/${template}.conf
 
-  sudo vm create -t ${template} -s g -m 2048m -c 2 ${name}
-  sudo vm install ${name} ${iso}
+  sudo vm create -t ${template} -s 16g -m 2048m -c 2 ${name}
+}
 
-  sleep 3
+install()
+{
+  sudo vm install -f ${name} ${iso}
+}
+
+console()
+{
   sudo vm console ${name}
 }
 
