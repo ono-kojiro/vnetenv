@@ -1,0 +1,19 @@
+---
+- name: delete bridges
+  ansible.builtin.shell: |
+    num=`nmcli con | awk '{ print $1 }' | grep -e '^{{ item.name }}$' | wc -l`
+    if [ "$num" -eq 1 ]; then
+      nmcli con del {{ item.name }}
+    fi
+  loop: "{{ bridges }}"
+      
+- name: create bridges
+  ansible.builtin.shell: |
+    nmcli con add \
+      type {{ item.type }} \
+      ifname {{ item.name }} \
+      conn.id {{ item.name }} \
+      ipv4.method disabled \
+      ipv6.method disabled
+  loop: "{{ bridges }}"
+

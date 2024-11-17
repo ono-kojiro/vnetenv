@@ -1,0 +1,13 @@
+- name: setup virtual network environment
+  hosts:  myhost
+  become: true
+
+  roles:
+  - name: bridge
+    tags: bridge
+
+  - name: kvm
+    tags: kvm
+
+  - name: cockpit
+    tags: cockpit

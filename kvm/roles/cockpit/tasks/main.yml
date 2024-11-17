@@ -1,0 +1,29 @@
+---
+- name: install cockpit
+  ansible.builtin.apt:
+    name:
+    - cockpit
+    - cockpit-machines
+    state: present
+
+- name: copy server cert
+  ansible.builtin.copy:
+    src: solomon.crt
+    dest: /etc/cockpit/ws-certs.d/
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: copy server key
+  ansible.builtin.copy:
+    src: solomon.key
+    dest: /etc/cockpit/ws-certs.d/
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: start cockpit
+  ansible.builtin.systemd_service:
+    name: cockpit
+    state: restarted
+

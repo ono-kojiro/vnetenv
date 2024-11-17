@@ -1,0 +1,17 @@
+---
+bridges:
+- name: br0
+  type: bridge
+
+- name: br1
+  type: bridge
+
+- name: br2
+  type: bridge
+
+- name: br3
+  type: bridge
+
+vmusers:
+- myuser
+

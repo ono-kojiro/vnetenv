@@ -1,0 +1,14 @@
+---
+- name: install kvm
+  ansible.builtin.apt:
+    name:
+    - libvirt-clients
+    state: present
+
+- name: add users to libvirt group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: libvirt
+    append: yes
+  loop: "{{ vmusers }}"
+
