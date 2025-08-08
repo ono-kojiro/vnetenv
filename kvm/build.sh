@@ -2,7 +2,9 @@
 
 top_dir="$( cd "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
 cd $top_dir
-  
+
+flags=""
+
 bridges="wan lan1 lan2 lan3"
 
 help()
@@ -40,7 +42,7 @@ clean()
 
 deploy()
 {
-  ansible-playbook -K -i hosts.yml site.yml
+  ansible-playbook $flags -i hosts.yml site.yml
 }
 
 create_bridge()
@@ -64,7 +66,7 @@ delete_bridge()
 default()
 {
   tag=$1
-  ansible-playbook -K -i hosts.yml -t $tag site.yml
+  ansible-playbook $flags -i hosts.yml -t $tag site.yml
 }
 
 hosts
@@ -79,6 +81,9 @@ while [ $# -ne 0 ]; do
     -v )
       verbose=1
       ;;
+	-* )
+	  flags="$flags $1"
+	  ;;
     * )
       args="$args $1"
       ;;
