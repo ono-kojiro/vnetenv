@@ -1,0 +1,7 @@
+- name: setup freebsd
+  hosts: freebsd
+
+  roles:
+  - name: ntp
+    tags: ntp
+
