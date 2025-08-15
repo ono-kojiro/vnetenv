@@ -8,7 +8,7 @@
 
 - name: copy server cert
   ansible.builtin.copy:
-    src: solomon.crt
+    src: "{{ server_crt }}"
     dest: /etc/cockpit/ws-certs.d/
     owner: root
     group: root
@@ -16,7 +16,7 @@
 
 - name: copy server key
   ansible.builtin.copy:
-    src: solomon.key
+    src:  "{{ server_key }}"
     dest: /etc/cockpit/ws-certs.d/
     owner: root
     group: root

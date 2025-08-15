@@ -17,3 +17,8 @@
       ipv6.method disabled
   loop: "{{ bridges }}"
 
+- name: up bridges
+  ansible.builtin.shell: |
+    nmcli con up {{ item.name }}
+  loop: "{{ bridges }}"
+

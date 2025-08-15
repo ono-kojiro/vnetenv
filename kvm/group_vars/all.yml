@@ -12,6 +12,6 @@ bridges:
 - name: br3
   type: bridge
 
-vmusers:
+kvmusers:
 - myuser
 
