@@ -1,0 +1,10 @@
+- name: misc
+  hosts: openindiana
+
+  tasks:
+  - name: update package catalog
+    ansible.builtin.shell: |
+      pkg update
+    register: res
+    failed_when: res.rc != 0 and res.rc != 4
+    tags: update, never

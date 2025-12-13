@@ -1,0 +1,4 @@
+---
+ansible_host: openindiana
+ansible_become: true
+
