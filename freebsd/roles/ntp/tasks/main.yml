@@ -1,0 +1,25 @@
+---
+- name: disable default ntpservers
+  ansible.builtin.replace:
+    path: /etc/ntp.conf
+    regexp: '^pool (.+)'
+    replace: '#\1'
+
+- name: create local ntp configuration
+  ansible.builtin.lineinfile:
+    path: /etc/ntp/local.conf
+    line: 'pool ntp.nict.jp iburst'
+    state: present
+    create: true
+
+- name: include local ntp configuration
+  ansible.builtin.lineinfile:
+    path: /etc/ntp.conf
+    line: 'includefile "/etc/ntp/local.conf"'
+    state: present
+
+- name: restart ntpd
+  ansible.builtin.service:
+    name: ntpd
+    state: restarted
+
