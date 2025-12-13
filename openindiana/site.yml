@@ -8,3 +8,14 @@
     register: res
     failed_when: res.rc != 0 and res.rc != 4
     tags: update, never
+
+  - name: show status of services
+    ansible.builtin.shell: |
+      svcs
+    tags: services, never
+
+  - name: enable ntp
+    ansible.builtin.shell: |
+      svcadm enable network/ntp
+    tags: ntp, never
+
