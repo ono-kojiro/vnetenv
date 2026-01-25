@@ -1,0 +1,14 @@
+all:
+  children:
+    servers:
+      hosts:
+        bookworm:
+        freebsd:
+        jammy:
+        noble:
+        oracle:
+        rocky:
+        trixie:
+        xubuntu:
+
+

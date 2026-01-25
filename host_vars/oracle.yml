@@ -1,4 +1,4 @@
 ---
-ansible_host: freebsd
+ansible_host: oracle
 ansible_become: false
 

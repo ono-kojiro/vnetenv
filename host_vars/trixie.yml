@@ -1,0 +1,4 @@
+---
+ansible_host: trixie
+ansible_become: true
+

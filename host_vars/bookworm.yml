@@ -1,0 +1,4 @@
+---
+ansible_host: bookworm
+ansible_become: true
+
