@@ -1,0 +1,34 @@
+00100 allow ip from any to any via lo0
+00200 deny ip from any to 127.0.0.0/8
+00300 deny ip from 127.0.0.0/8 to any
+00400 deny ip from any to ::1
+00500 deny ip from ::1 to any
+00600 allow ipv6-icmp from :: to ff02::/16
+00700 allow ipv6-icmp from fe80::/10 to fe80::/10
+00800 allow ipv6-icmp from fe80::/10 to ff02::/16
+00900 allow ipv6-icmp from any to any icmp6types 1
+01000 allow ipv6-icmp from any to any icmp6types 2,135,136
+01100 check-state :default
+01200 allow tcp from me to any established
+01300 allow tcp from me to any setup keep-state :default
+01400 allow udp from me to any keep-state :default
+01500 allow icmp from me to any keep-state :default
+01600 allow ipv6-icmp from me to any keep-state :default
+01700 allow udp from 0.0.0.0 68 to 255.255.255.255 67 out
+01800 allow udp from any 67 to me 68 in
+01900 allow udp from any 67 to 255.255.255.255 68 in
+02000 allow udp from fe80::/10 to me 546 in
+02100 allow icmp from any to any icmptypes 8
+02200 allow ipv6-icmp from any to any icmp6types 128,129
+02300 allow icmp from any to any icmptypes 3,4,11
+02400 allow ipv6-icmp from any to any icmp6types 3
+65000 count ip from any to any
+65100 deny { tcp or udp } from any to any 135-139,445 in
+65200 deny { tcp or udp } from any to any 1026,1027 in
+65300 deny { tcp or udp } from any to any 1433,1434 in
+65400 deny ip from any to 255.255.255.255
+65500 deny ip from any to 224.0.0.0/24 in
+65500 deny udp from any to any 520 in
+65500 deny tcp from any 80,443 to any 1024-65535 in
+65500 deny ip from any to any
+65535 allow ip from any to any
