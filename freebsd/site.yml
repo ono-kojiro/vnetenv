@@ -1,7 +1,30 @@
 - name: setup freebsd
-  hosts: freebsd
+  hosts:
+  #- freebsd
+  - router
 
   roles:
   - name: ntp
     tags: ntp
+
+  - name: base
+    tags: base
+
+  - name: graphics
+    tags: graphics
+
+  - name: wayland
+    tags: wayland
+
+  - name: lightdm
+    tags: lightdm
+
+  - name: xfce
+    tags: xfce
+
+  - name: sssd
+    tags: sssd
+
+  - name: static_ip
+    tags: static_ip
 

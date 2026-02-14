@@ -1,0 +1,22 @@
+---
+ansible_host: router
+ansible_become: true
+
+sssd_ldap_uri: ldaps://192.168.1.72
+sssd_ldap_suffix: dc=example,dc=com
+
+sssd_ldap_tls_reqcert: never
+sssd_allow_groups: ldapusers
+
+sudo_admin_group: ldapusers
+
+ifaces:  
+- name: vtnet0
+  value: "172.16.70.1/24"
+
+- name: vtnet1
+  value: "172.16.71.1/24"
+
+- name: vtnet2
+  value: "172.16.72.1/24"
+

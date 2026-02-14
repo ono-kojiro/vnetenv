@@ -3,4 +3,5 @@ all:
     servers:
       hosts:
         freebsd:
+        router:
 
