@@ -1,0 +1,36 @@
+---
+- name: set static ip for interfaces
+  community.general.sysrc:
+    name: "ifconfig_{{ item.name }}"
+    value: "inet {{ item.value }}"
+    path: /etc/rc.conf
+  loop: "{{ ifaces }}"
+
+- name: disable ipv6_enable
+  community.general.sysrc:
+    name: ipv6_enable
+    value: "NO"
+    path: /etc/rc.conf
+
+- name: disable ipv6_network_interfaces
+  community.general.sysrc:
+    name: ipv6_network_interfaces 
+    value: "none"
+    path: /etc/rc.conf
+
+- name: disable ip6addrctl_enable
+  community.general.sysrc:
+    name: ip6addrctl_enable 
+    value: "NO"
+    path: /etc/rc.conf
+
+#- name: restart interface
+#  ansible.builtin.service:
+#    name: netif
+#    state: restarted
+
+#- name: restart routing
+#  ansible.builtin.service:
+#    name: routing
+#    state: restarted
+
