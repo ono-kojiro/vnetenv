@@ -1,0 +1,11 @@
+---
+- name: enable routing
+  community.general.sysrc:
+    name: gateway_enable
+    value: "YES"
+    path: /etc/rc.conf
+
+- name: enable routing now
+  ansible.builtin.shell: |
+    sysctl net.inet.ip.forwarding=1
+
