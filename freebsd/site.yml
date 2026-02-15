@@ -33,9 +33,6 @@
   - name: routing
     tags: routing
 
-  - name: router
-    tags: router
-
   - name: dhcpd
     tags: dhcpd
 

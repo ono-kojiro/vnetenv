@@ -20,3 +20,6 @@ ifaces:
 - name: vtnet3
   value: "172.16.13.1/24"
 
+dhcpd_conf: router10-dhcpd.conf
+dhcpd_ifaces: "vtnet1 vtnet2 vtnet3"
+
