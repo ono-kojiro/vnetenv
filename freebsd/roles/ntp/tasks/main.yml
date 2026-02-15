@@ -5,6 +5,14 @@
     regexp: '^pool (.+)'
     replace: '#\1'
 
+- name: change permission of /etc/ntp
+  ansible.builtin.file:
+    path: /etc/ntp
+    state: directory
+    owner: root
+    group: ntpd
+    mode: '0750'
+
 - name: create local ntp configuration
   ansible.builtin.lineinfile:
     path: /etc/ntp/local.conf
@@ -17,6 +25,18 @@
     path: /etc/ntp.conf
     line: 'includefile "/etc/ntp/local.conf"'
     state: present
+
+- name: enable ntpd
+  community.general.sysrc:
+    name: ntpd_enable
+    value: "YES"
+    path: /etc/rc.conf
+
+- name: sync on start
+  community.general.sysrc:
+    name: ntpd_sync_on_start
+    value: "YES"
+    path: /etc/rc.conf
 
 - name: restart ntpd
   ansible.builtin.service:
