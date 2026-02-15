@@ -36,3 +36,6 @@
   - name: dhcpd
     tags: dhcpd
 
+  - name: dns
+    tags: dns
+

@@ -2,6 +2,8 @@
 ansible_host: router10
 ansible_become: true
 
+sysconfdir: /usr/local/etc
+
 sssd_ldap_uri: ldaps://192.168.1.72
 sssd_ldap_suffix: dc=example,dc=com
 
@@ -22,4 +24,7 @@ ifaces:
 
 dhcpd_conf: router10-dhcpd.conf
 dhcpd_ifaces: "vtnet1 vtnet2 vtnet3"
+
+named_conf: named.conf
+named_dir: /usr/local/etc/namedb
 

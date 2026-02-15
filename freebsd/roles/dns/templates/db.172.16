@@ -1,0 +1,19 @@
+; BIND reverse data file
+$TTL 2d    ; default TTL for zone
+@         IN      SOA   router10 root (
+                                2026021501 ; serial number
+                                12h        ; refresh
+                                15m        ; update retry
+                                3w         ; expiry
+                                2h         ; minimum
+                                )
+; name server RR for the domain
+               IN      NS     router10.example.com.
+1.11           IN      PTR    router10.example.com.
+1.12           IN      PTR    router10.example.com.
+1.13           IN      PTR    router10.example.com.
+20.12          IN      PTR    router20.example.com.
+1.23           IN      PTR    router20.example.com.
+30.13          IN      PTR    router30.example.com.
+1.32           IN      PTR    router30.example.com.
+
