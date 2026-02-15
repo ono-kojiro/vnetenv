@@ -1,7 +1,6 @@
 - name: setup freebsd
   hosts:
-  #- freebsd
-  - router
+  - router10
 
   roles:
   - name: ntp
@@ -27,4 +26,16 @@
 
   - name: static_ip
     tags: static_ip
+
+  - name: ipv6
+    tags: ipv6
+
+  - name: routing
+    tags: routing
+
+  - name: router
+    tags: router
+
+  - name: dhcpd
+    tags: dhcpd
 
