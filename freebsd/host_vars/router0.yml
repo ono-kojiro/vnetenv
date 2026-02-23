@@ -23,7 +23,7 @@ ifaces:
 - name: vtnet3
   value: "172.16.30.1/24"
 
-dhcpd_conf: router0-dhcpd.conf
+dhcpd_conf: dhcpd.conf
 dhcpd_ifaces: "vtnet1 vtnet2 vtnet3"
 
 named_conf: named.conf

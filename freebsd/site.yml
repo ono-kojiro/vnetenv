@@ -5,6 +5,16 @@
   roles:
   - name: ntp
     tags: ntp
+  
+  - name: sssd
+    tags: sssd
+
+  - name: dns
+    tags: dns
+
+  - name: dhcpd
+    tags: dhcpd
+
 
   - name: base
     tags: base
@@ -21,9 +31,6 @@
   - name: xfce
     tags: xfce
 
-  - name: sssd
-    tags: sssd
-
   - name: static_ip
     tags: static_ip
 
@@ -32,12 +39,6 @@
 
   - name: routing
     tags: routing
-
-  - name: dhcpd
-    tags: dhcpd
-
-  - name: dns
-    tags: dns
 
   - name: nat
     tags: nat, enable_nat
