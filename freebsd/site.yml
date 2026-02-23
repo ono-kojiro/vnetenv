@@ -1,6 +1,6 @@
 - name: setup freebsd
   hosts:
-  - router10
+  - router0
 
   roles:
   - name: ntp

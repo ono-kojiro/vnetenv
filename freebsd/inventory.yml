@@ -2,5 +2,6 @@ all:
   children:
     servers:
       hosts:
+        router0:
         router10:
 
