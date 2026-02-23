@@ -1,0 +1,55 @@
+---
+- name: stop ipfw
+  ansible.builtin.service:
+    name: ipfw
+    state: stopped
+  tags: never, disable_nat
+
+- name: stop natd
+  ansible.builtin.service:
+    name: natd
+    state: stopped
+  tags: never, disable_nat
+
+- name: disable firewall
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    regexp: '^firewall_enable='
+    state: absent
+  tags: never, disable_nat
+
+- name: disable firewall type
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    state: absent
+    regexp: '^firewall_type='
+  tags: never, disable_nat
+
+- name: disable natd
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    state: absent
+    regexp: '^natd_enable='
+  tags: never, disable_nat
+
+- name: disable natd interface
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    state: absent
+    regexp: '^natd_interface='
+  tags: never, disable_nat
+
+- name: set natd flags
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    state: absent
+    regexp: '^natd_flags='
+  tags: never, disable_nat
+
+- name: disable gateway
+  ansible.builtin.lineinfile:
+    path: /etc/rc.conf
+    state: absent
+    regexp: '^gateway_enable='
+  tags: never, disable_nat
+

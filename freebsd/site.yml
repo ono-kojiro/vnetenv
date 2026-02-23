@@ -39,3 +39,9 @@
   - name: dns
     tags: dns
 
+  - name: nat
+    tags: nat, enable_nat
+  
+  - name: disable_nat
+    tags: never, disable_nat
+

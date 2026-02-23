@@ -1,0 +1,49 @@
+---
+
+- name: enable gateway
+  community.general.sysrc:
+    name: gateway_enable
+    value: "YES"
+    path: /etc/rc.conf
+
+- name: enable firewall
+  community.general.sysrc:
+    name: firewall_enable
+    value: "YES"
+    path: /etc/rc.conf
+
+- name: set firewall type
+  community.general.sysrc:
+    name: firewall_type
+    value: "OPEN"
+    path: /etc/rc.conf
+
+- name: enable natd
+  community.general.sysrc:
+    name: natd_enable 
+    value: "YES"
+    path: /etc/rc.conf
+
+- name: set natd interface
+  community.general.sysrc:
+    name: natd_interface
+    value: "vtnet0"
+    path: /etc/rc.conf
+
+- name: set natd flags
+  community.general.sysrc:
+    name: natd_flags
+    value: ""
+    path: /etc/rc.conf
+
+- name: restart ipfw
+  ansible.builtin.service:
+    name: ipfw
+    state: restarted
+
+- name: restart natd
+  ansible.builtin.service:
+    name: natd
+    state: restarted
+
+
