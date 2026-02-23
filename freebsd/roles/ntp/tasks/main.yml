@@ -13,12 +13,13 @@
     group: ntpd
     mode: '0750'
 
-- name: create local ntp configuration
-  ansible.builtin.lineinfile:
-    path: /etc/ntp/local.conf
-    line: 'pool ntp.nict.jp iburst'
-    state: present
-    create: true
+- name: upload local.conf
+  ansible.builtin.template:
+    src: local.conf
+    dest: /etc/ntp/local.conf
+    owner: root
+    group: ntpd
+    mode: '0644'
 
 - name: include local ntp configuration
   ansible.builtin.lineinfile:
