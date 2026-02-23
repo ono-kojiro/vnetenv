@@ -1,7 +1,7 @@
 ---
 ansible_host: router0
-#ansible_become: true
-ansible_become: false
+ansible_become: true
+#ansible_become: false
 
 sysconfdir: /usr/local/etc
 
@@ -28,4 +28,5 @@ dhcpd_ifaces: "vtnet1 vtnet2 vtnet3"
 
 named_conf: named.conf
 named_dir: /usr/local/etc/namedb
+named_listen_on: "127.0.0.1; 192.168.122.99; 172.16.10.1; 172.16.20.1; 172.16.30.1;" 
 

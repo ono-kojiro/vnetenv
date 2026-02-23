@@ -11,7 +11,8 @@ $ORIGIN example.com. ; base domain-name
                                 )
 ; name server RR for the domain
            IN      NS      router10.example.com.
-router10   IN      A       172.16.12.1
-router20   IN      A       172.16.12.20
-router30   IN      A       172.16.13.30
+router0    IN      A       172.16.10.1
+router10   IN      A       172.16.10.99
+router20   IN      A       172.16.20.99
+router30   IN      A       172.16.30.99
 

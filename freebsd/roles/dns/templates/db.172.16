@@ -8,12 +8,27 @@ $TTL 2d    ; default TTL for zone
                                 2h         ; minimum
                                 )
 ; name server RR for the domain
-               IN      NS     router10.example.com.
+               IN      NS     router0.example.com.
+1.10           IN      PTR    router0.example.com.
+1.20           IN      PTR    router0.example.com.
+1.30           IN      PTR    router0.example.com.
+
+99.10          IN      PTR    router10.example.com.
 1.11           IN      PTR    router10.example.com.
 1.12           IN      PTR    router10.example.com.
 1.13           IN      PTR    router10.example.com.
-20.12          IN      PTR    router20.example.com.
+
+99.20          IN      PTR    router20.example.com.
+1.21           IN      PTR    router20.example.com.
+1.22           IN      PTR    router20.example.com.
 1.23           IN      PTR    router20.example.com.
-30.13          IN      PTR    router30.example.com.
+1.24           IN      PTR    router20.example.com.
+1.25           IN      PTR    router20.example.com.
+1.26           IN      PTR    router20.example.com.
+1.27           IN      PTR    router20.example.com.
+
+99.30          IN      PTR    router30.example.com.
+1.31           IN      PTR    router30.example.com.
 1.32           IN      PTR    router30.example.com.
+1.33           IN      PTR    router30.example.com.
 
