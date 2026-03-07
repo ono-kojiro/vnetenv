@@ -24,4 +24,6 @@
   - name: dns
     tags: dns
 
+  - name: dhcpd
+    tags: dhcpd
 
