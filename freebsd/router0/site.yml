@@ -1,0 +1,27 @@
+- name: setup router0
+  hosts:
+  - router0
+
+  roles:
+  - name: disable_ipv6
+    tags: disable_ipv6
+
+  - name: ntp
+    tags: ntp
+
+  - name: cacert
+    tags: cacert
+
+  - name: sssd
+    tags: sssd
+  
+  - name: nat
+    tags: nat
+  
+  - name: routing
+    tags: routing
+
+  - name: dns
+    tags: dns
+
+

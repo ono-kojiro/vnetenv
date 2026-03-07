@@ -1,0 +1,109 @@
+---
+- name: install sssd
+  ansible.builtin.package:
+    name:
+    - bash
+    - sssd2
+    - pam_mkhomedir
+    state: present
+
+- name: create symlink of bash
+  ansible.builtin.file:
+    src:  /usr/local/bin/bash
+    dest: /bin/bash
+    state: link
+
+- name: install openldap
+  community.general.pkgng:
+    name:
+    - openldap26-client
+    state: present
+  
+- name: copy sssd.conf
+  ansible.builtin.template:
+    src: sssd.conf
+    dest: /usr/local/etc/sssd/sssd.conf
+    owner: root
+    mode: '0600'
+
+- name: enable sss_ssh_authorizedkeys
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?AuthorizedKeysCommand '
+    line: AuthorizedKeysCommand /usr/local/bin/sss_ssh_authorizedkeys
+
+- name: enable AuthorizedKeysCommandUser
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?AuthorizedKeysCommandUser '
+    line: 'AuthorizedKeysCommandUser nobody'
+
+- name: enable UsePAM
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?UsePAM '
+    line: 'UsePAM yes'
+
+- name: enable sssd
+  community.general.sysrc:
+    name: sssd_enable
+    value: "YES"
+    path: /etc/rc.conf
+
+- name: restart sssd
+  ansible.builtin.service:
+    name: sssd
+    state: restarted
+
+- name: add sss for nsswitch group
+  ansible.builtin.replace:
+    path: /etc/nsswitch.conf
+    regexp: '^group: compat'
+    replace: 'group: files sss'
+
+- name: add sss for nsswitch passwd
+  ansible.builtin.replace:
+    path: /etc/nsswitch.conf
+    regexp: '^passwd: compat'
+    replace: 'passwd: files sss'
+
+- name: add sss in nsswitch sudo
+  ansible.builtin.lineinfile:
+    path: /etc/nsswitch.conf
+    line: 'sudoers: files sss'
+
+- name: copy sshd for pam
+  ansible.builtin.copy:
+    src: sshd
+    dest: /etc/pam.d/sshd
+    mode: '0644'
+
+- name: copy system for pam
+  ansible.builtin.copy:
+    src: system
+    dest: /etc/pam.d/system
+    mode: '0644'
+
+- name: copy su for pam
+  ansible.builtin.copy:
+    src:  su
+    dest: /etc/pam.d/su
+    mode: '0644'
+
+- name: install sudo
+  ansible.builtin.package:
+    name: sudo
+    state: present
+
+- name: add ldapwheel to sudoer
+  ansible.builtin.lineinfile:
+    path: /usr/local/etc/sudoers.d/80-ldapusers
+    line: "%{{ sudo_admin_group }}  ALL=(ALL:ALL) ALL"
+    create: yes
+
+- name: restart sshd
+  ansible.builtin.service:
+    name:  sssd
+    state: restarted
+
+

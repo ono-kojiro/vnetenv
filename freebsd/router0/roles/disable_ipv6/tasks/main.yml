@@ -1,0 +1,30 @@
+---
+- name: disable ipv6_enable
+  community.general.sysrc:
+    name: ipv6_enable
+    value: "NO"
+    path: /etc/rc.conf
+
+- name: disable ipv6_activate_all_interfaces
+  community.general.sysrc:
+    name: ipv6_activate_all_interfaces
+    value: "NO"
+    path: /etc/rc.conf
+
+- name: disable ip6addrctl_enable
+  community.general.sysrc:
+    name: ip6addrctl_enable
+    value: "NO"
+    path: /etc/rc.conf
+
+- name: disable ipv6_network_interfaces
+  community.general.sysrc:
+    name: ipv6_network_interfaces
+    value: "none"
+    path: /etc/rc.conf
+
+- name: disable net.inet6.ip6.auto_linklocal
+  ansible.builtin.lineinfile:
+    path: /etc/sysctl.conf
+    line: 'net.inet6.ip6.auto_linklocal=0'
+

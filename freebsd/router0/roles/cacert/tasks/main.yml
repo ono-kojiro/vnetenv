@@ -1,0 +1,20 @@
+---
+- name: install rootcertificate bundle
+  ansible.builtin.package:
+    name: ca_root_nss
+    state: present
+
+- name: create /usr/local/etc/ssl/certs directory
+  ansible.builtin.file:
+    path: /usr/local/etc/ssl/certs
+    state: directory
+
+- name: upload ca cert
+  ansible.builtin.copy:
+    src: myrootca.crt
+    dest: /usr/local/etc/ssl/certs/
+
+- name: update hash links
+  ansible.builtin.shell: |
+    certctl rehash
+

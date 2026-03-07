@@ -1,0 +1,28 @@
+---
+- name: enable routing
+  community.general.sysrc:
+    name: gateway_enable
+    value: "YES"
+    path: /etc/rc.conf
+
+- name: enable routing now
+  ansible.builtin.shell: |
+    sysctl net.inet.ip.forwarding=1
+
+- name: set static ip for interfaces
+  community.general.sysrc:
+    name: "ifconfig_{{ item.name }}"
+    value: "inet {{ item.value }}"
+    path: /etc/rc.conf
+  loop: "{{ ifaces }}"
+
+- name: restart interface
+  ansible.builtin.service:
+    name: netif
+    state: restarted
+
+- name: restart routing
+  ansible.builtin.service:
+    name: routing
+    state: restarted
+
