@@ -1,5 +1,7 @@
 - name: setup sssd-ldap
-  hosts: ubuntu
+  hosts:
+  #- ubuntu
+  - localhost
 
   roles:
     - role: sssd
@@ -7,4 +9,9 @@
     
     - role: sudo
       tags: sudo
-    
+
+    - role: sway
+      tags: sway, never
+   
+    - role: wayvnc
+      tags: wayvnc, never 
