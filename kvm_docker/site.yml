@@ -1,4 +1,4 @@
-- name: setup bridge
+- name: setup bridge and network
   hosts: myserver
   
   #environment:
@@ -8,4 +8,7 @@
   roles:
   - name: bridge
     tags: bridge
+
+  - name: network
+    tags: network
 
