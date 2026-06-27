@@ -1,0 +1,14 @@
+Host opnsense
+        Hostname 192.168.122.98
+        User root
+
+Host client
+        Hostname 172.16.1.101
+        User root
+        ProxyJump opnsense
+
+Host server
+        Hostname 172.16.0.42
+        User root
+        ProxyJump opnsense
+

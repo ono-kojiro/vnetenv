@@ -1,0 +1,155 @@
+#!/bin/sh
+
+top_dir="$( cd "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"
+cd $top_dir
+
+flags=""
+
+help()
+{
+  usage
+}
+
+usage()
+{
+  cat << EOS
+usage : $0 [options] target1 target2 ...
+EOS
+
+}
+
+all()
+{
+  deploy
+}
+
+prepare()
+{
+  sudo dnf -y install ansible-core
+}
+
+hosts()
+{
+  ansible-inventory -i inventory.yml --list --yaml > hosts.yml
+}
+
+deploy()
+{
+  ansible-playbook $flags -i hosts.yml site.yml
+}
+
+default()
+{
+  tag=$1
+  ansible-playbook $flags -i hosts.yml -t $tag site.yml
+}
+
+addbr()
+{
+  ansible-playbook $flags -i hosts.yml -t add site.yml
+}
+
+delbr()
+{
+  ansible-playbook $flags -i hosts.yml -t delete site.yml
+}
+
+bridge()
+{
+  docker network ls
+}
+
+br()
+{
+  bridge
+}
+
+create()
+{
+  cd examples && sh build.sh create
+  cd ${top_dir}
+}
+
+start()
+{
+  cd examples && sh build.sh start
+  cd ${top_dir}
+}
+
+stop()
+{
+  cd examples && sh build.sh stop
+  cd ${top_dir}
+}
+
+down()
+{
+  cd examples && sh build.sh down
+  cd ${top_dir}
+}
+
+example()
+{
+  cd examples && sh build.sh create
+  cd ${top_dir}
+  cd examples && sh build.sh start
+  cd ${top_dir}
+}
+
+server()
+{
+  cd examples && sh build.sh server
+  cd ${top_dir}
+}
+
+client()
+{
+  cd examples && sh build.sh client
+  cd ${top_dir}
+}
+
+test()
+{
+  cd tests && sh test.sh
+  cd ${top_dir}
+}
+
+hosts
+
+args=""
+while [ "$#" -ne 0 ]; do
+  case $1 in
+    -h )
+      usage
+      exit 1
+      ;;
+    -v )
+      verbose=1
+      ;;
+    -* )
+      flags="$flags $1"
+      ;;
+    * )
+      args="$args $1"
+      ;;
+  esac
+  
+  shift
+done
+
+if [ -z "$args" ]; then
+  help
+  exit 1
+fi
+
+for arg in $args; do
+  num=`LANG=C type $arg | grep 'function' | wc -l`
+  if [ $num -ne 0 ]; then
+    $arg
+  else
+    #echo "ERROR : $arg is not shell function"
+    #exit 1
+    default $arg
+  fi
+done
+

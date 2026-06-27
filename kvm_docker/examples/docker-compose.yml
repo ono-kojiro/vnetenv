@@ -1,0 +1,29 @@
+services:
+  client:
+    image: resolute:latest
+    container_name: client
+    hostname: client
+    restart:  always
+    stdin_open: true   # docker run -i
+    tty:        true   # docker run -t
+    networks:
+      opt1:
+        ipv4_address: 172.16.1.101
+  
+  server:
+    image: resolute:latest
+    container_name: server
+    hostname: server
+    restart:  always
+    stdin_open: true   # docker run -i
+    tty:        true   # docker run -t
+    networks:
+      wan:
+        ipv4_address: 172.16.0.42
+
+networks:
+  wan:
+    external: true
+  opt1:
+    external: true
+
