@@ -1,5 +1,5 @@
 - name: setup virtual network environment
-  hosts:  myhost
+  hosts:  localhost
   become: true
 
   roles:

@@ -6,6 +6,7 @@
       nmcli con del {{ item.name }}
     fi
   loop: "{{ bridges }}"
+  tags: delete
       
 - name: create bridges
   ansible.builtin.shell: |

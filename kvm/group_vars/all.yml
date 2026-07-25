@@ -1,15 +1,21 @@
 ---
 bridges:
-- name: br0
+- name: wan
   type: bridge
 
-- name: br1
+- name: inet
   type: bridge
 
-- name: br2
+- name: opt1
   type: bridge
 
-- name: br3
+- name: opt2
+  type: bridge
+
+- name: opt3
+  type: bridge
+
+- name: opt4
   type: bridge
 
 kvmusers:
